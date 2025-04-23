@@ -15,4 +15,4 @@ st.write(f"You selected: {number}")
 
 # Add a button
 if st.button("Click Me!"):
-    st.success("Button clicked! 🎉")
+    st.success("Button clicked! �")
