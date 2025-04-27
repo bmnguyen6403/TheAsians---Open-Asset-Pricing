@@ -42,7 +42,7 @@ category_filter = st.sidebar.multiselect("Category", df['Category'].unique(), de
 
 # --- Filtering ---
 # Apply date filter
-start_date, end_date = date_range
+start_date, end_date = np.datetime64(date_range[0]), np.datetime64(date_range[1])
 filtered_df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
 
 # Apply category filter
@@ -103,8 +103,3 @@ area_chart = alt.Chart(filtered_df).mark_area().encode(
         title = "Metric 2 Over Time"
     ).interactive()
 st.altair_chart(area_chart, use_container_width=True)
-
-# --- Popup ---
-# Use st.session_state to control popup visibility
-if 'show_popup' not in st.session_state:
-    st.session_state.show_popup = True  # S
