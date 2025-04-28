@@ -1,105 +1,80 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
-import altair as alt
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# --- Helper Functions ---
-def generate_placeholder_data(num_rows):
-    """
-    Generates placeholder data for demonstration purposes.
+# --- Page Config ---
+st.set_page_config(page_title="Signal Engineering Results", layout="wide")
 
-    Returns:
-        pd.DataFrame: A DataFrame with placeholder data.
-    """
-    data = {
-        'Date': pd.date_range(start='2024-01-01', periods=num_rows, freq='D'),
-        'Metric1': np.random.rand(num_rows) * 100,
-        'Metric2': np.random.rand(num_rows) * 50,
-        'Metric3': np.random.rand(num_rows) * 200,
-        'Category': np.random.choice(['A', 'B', 'C', 'D'], num_rows),
-        'Value': np.random.randint(1, 100, num_rows),
-    }
-    return pd.DataFrame(data)
+# --- Title ---
+st.title("\U0001F4C8 Signal Engineering Project Overview")
 
-# --- Configuration ---
-PAGE_CONFIG = {
-    "page_title": "Operations Dashboard",
-    "page_icon": "📊",  # You can use an emoji here
-    "layout": "wide",  # Use the wide layout
-    "initial_sidebar_state": "expanded",  # Keep the sidebar expanded
+# --- Introduction Text ---
+st.markdown("""
+This app presents the results of a project that evaluated financial signals using machine learning and signal engineering.
+It compares the top 10 original signals versus top 10 engineered signals based on their feature importance in predicting returns.
+""")
+
+# --- Data: Manually Inserted Based on Your Results ---
+original_data = {
+    'Feature': ['retConglomerate', 'CustomerMomentum', 'betaVIX', 'IntanEP', 'MomSeason16YrPlus',
+                'roaq', 'IndMom', 'TrendFactor', 'MomOffSeason06YrPlus', 'DelDRC'],
+    'Importance': [0.2712, 0.1244, 0.0800, 0.0502, 0.0481, 0.0441, 0.0417, 0.0374, 0.0358, 0.0284]
 }
-st.set_page_config(**PAGE_CONFIG)
 
-# --- Data Loading ---
-# Generate placeholder data
-num_rows = 365  # Example: data for one year
-df = generate_placeholder_data(num_rows)
+engineered_data = {
+    'Feature': ['retConglomerate_MA3', 'MomSeason16YrPlus_MA3', 'CustomerMomentum_MA3', 'TrendFactor_MA6',
+                'TrendFactor_MA3', 'retConglomerate_MA6', 'IndMom_MA6', 'IndMom_MA3', 'betaVIX_MA6', 'betaVIX_MA3'],
+    'Importance': [0.0995, 0.0749, 0.0573, 0.0478, 0.0383, 0.0357, 0.0352, 0.0352, 0.0323, 0.0311]
+}
+
+original_df = pd.DataFrame(original_data)
+engineered_df = pd.DataFrame(engineered_data)
 
 # --- Sidebar ---
-st.sidebar.title("Filters")
-date_range = st.sidebar.date_input("Date Range", [df['Date'].min(), df['Date'].max()], key="date_range")
-category_filter = st.sidebar.multiselect("Category", df['Category'].unique(), default=df['Category'].unique())
+st.sidebar.header("Choose View")
+view = st.sidebar.radio("Select Feature Set:", ("Original Signals", "Engineered Signals", "Comparison"))
 
-# --- Filtering ---
-# Apply date filter
-start_date, end_date = np.datetime64(date_range[0]), np.datetime64(date_range[1])
-filtered_df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+# --- Main Area ---
+if view == "Original Signals":
+    st.subheader("Top 10 Original Features by Importance")
+    st.dataframe(original_df)
 
-# Apply category filter
-filtered_df = filtered_df[filtered_df['Category'].isin(category_filter)]
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.barplot(x='Importance', y='Feature', data=original_df, palette='Blues_r', ax=ax)
+    ax.set_title("Top 10 Original Feature Importances")
+    st.pyplot(fig)
 
-# --- Main Content ---
-st.title("Operations Dashboard")
+elif view == "Engineered Signals":
+    st.subheader("Top 10 Engineered Features by Importance")
+    st.dataframe(engineered_df)
 
-# --- KPI Metrics ---
-st.header("Key Performance Indicators")
-kpi_cols = st.columns(3)  # Adjust the number of columns as needed
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.barplot(x='Importance', y='Feature', data=engineered_df, palette='Greens_r', ax=ax)
+    ax.set_title("Top 10 Engineered Feature Importances")
+    st.pyplot(fig)
 
-# Calculate some example KPIs.  Replace these with your actual KPI calculations.
-kpi1_value = filtered_df['Metric1'].mean()
-kpi2_value = filtered_df['Metric2'].sum()
-kpi3_value = filtered_df['Metric3'].max()
+else:
+    st.subheader("Comparison of Original vs Engineered Feature Importances")
 
-with kpi_cols[0]:
-    st.metric("Average Metric 1", f"{kpi1_value:.2f}")
-with kpi_cols[1]:
-    st.metric("Total Metric 2", f"{kpi2_value:.2f}")
-with kpi_cols[2]:
-    st.metric("Max Metric 3", f"{kpi3_value:.2f}")
+    col1, col2 = st.columns(2)
 
-# --- Charts ---
-st.header("Data Visualizations")
-chart_cols = st.columns(2)  # Create two columns for charts
+    with col1:
+        st.markdown("**Original Features**")
+        fig1, ax1 = plt.subplots(figsize=(8, 6))
+        sns.barplot(x='Importance', y='Feature', data=original_df, palette='Blues_r', ax=ax1)
+        ax1.set_title("Original Features")
+        st.pyplot(fig1)
 
-# Example 1: Line chart
-with chart_cols[0]:
-    line_chart = alt.Chart(filtered_df).mark_line().encode(
-        x='Date',
-        y='Metric1',
-        tooltip=['Date', 'Metric1']
-    ).properties(
-        title='Metric 1 Over Time'
-    ).interactive()
-    st.altair_chart(line_chart, use_container_width=True)
+    with col2:
+        st.markdown("**Engineered Features**")
+        fig2, ax2 = plt.subplots(figsize=(8, 6))
+        sns.barplot(x='Importance', y='Feature', data=engineered_df, palette='Greens_r', ax=ax2)
+        ax2.set_title("Engineered Features")
+        st.pyplot(fig2)
 
-# Example 2: Bar chart
-with chart_cols[1]:
-    bar_chart = alt.Chart(filtered_df).mark_bar().encode(
-        x='Category',
-        y='Value',
-        color='Category',
-        tooltip=['Category', 'Value']
-    ).properties(
-        title='Value by Category'
-    ).interactive()
-    st.altair_chart(bar_chart, use_container_width=True)
-
-# Example 3: Area Chart
-area_chart = alt.Chart(filtered_df).mark_area().encode(
-        x='Date',
-        y='Metric2',
-        tooltip = ['Date', 'Metric2']
-    ).properties(
-        title = "Metric 2 Over Time"
-    ).interactive()
-st.altair_chart(area_chart, use_container_width=True)
+# --- Footer ---
+st.markdown("""
+---
+Made with \U0001F9E0 by [Your Name]
+""")
