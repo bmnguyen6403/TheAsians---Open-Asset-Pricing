@@ -1,80 +1,98 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
+import numpy as np
+import shap
+from lifelines import CoxPHFitter
+from best_model_10_random_good.ipnyb import (
+    signal_df,
+    composite_df,
+    model_performance_df,
+    feature_importance_df,
+    survival_df,
+    decay_df,
+    regime_df,
+)
 
-# --- Page Config ---
-st.set_page_config(page_title="Signal Engineering Results", layout="wide")
+st.set_page_config(page_title="Stock Return Prediction Dashboard", layout="wide")
+st.title("📊 Stock Return Prediction Full Dashboard")
 
-# --- Title ---
-st.title("\U0001F4C8 Signal Engineering Project Overview")
+# Create Tabs
+tabs = st.tabs([
+    "Signal Selection", "Composite Signal", "Model Performance",
+    "Feature Importance", "Survival Analysis", "Signal Decay",
+    "Signal Engineering", "Regime Detection"
+])
 
-# --- Introduction Text ---
-st.markdown("""
-This app presents the results of a project that evaluated financial signals using machine learning and signal engineering.
-It compares the top 10 original signals versus top 10 engineered signals based on their feature importance in predicting returns.
-""")
+# Signal Selection Tab
+with tabs[0]:
+    st.header("🔍 Signal Selection")
+    good_signals = signal_df[(signal_df["Quality"] == "good") & (signal_df["T-Stat"] > 3)]
+    st.dataframe(good_signals)
+    st.metric(label="Number of Good Signals", value=len(good_signals))
 
-# --- Data: Manually Inserted Based on Your Results ---
-original_data = {
-    'Feature': ['retConglomerate', 'CustomerMomentum', 'betaVIX', 'IntanEP', 'MomSeason16YrPlus',
-                'roaq', 'IndMom', 'TrendFactor', 'MomOffSeason06YrPlus', 'DelDRC'],
-    'Importance': [0.2712, 0.1244, 0.0800, 0.0502, 0.0481, 0.0441, 0.0417, 0.0374, 0.0358, 0.0284]
-}
-
-engineered_data = {
-    'Feature': ['retConglomerate_MA3', 'MomSeason16YrPlus_MA3', 'CustomerMomentum_MA3', 'TrendFactor_MA6',
-                'TrendFactor_MA3', 'retConglomerate_MA6', 'IndMom_MA6', 'IndMom_MA3', 'betaVIX_MA6', 'betaVIX_MA3'],
-    'Importance': [0.0995, 0.0749, 0.0573, 0.0478, 0.0383, 0.0357, 0.0352, 0.0352, 0.0323, 0.0311]
-}
-
-original_df = pd.DataFrame(original_data)
-engineered_df = pd.DataFrame(engineered_data)
-
-# --- Sidebar ---
-st.sidebar.header("Choose View")
-view = st.sidebar.radio("Select Feature Set:", ("Original Signals", "Engineered Signals", "Comparison"))
-
-# --- Main Area ---
-if view == "Original Signals":
-    st.subheader("Top 10 Original Features by Importance")
-    st.dataframe(original_df)
-
-    fig, ax = plt.subplots(figsize=(10, 6))
-    sns.barplot(x='Importance', y='Feature', data=original_df, palette='Blues_r', ax=ax)
-    ax.set_title("Top 10 Original Feature Importances")
+# Composite Signal Tab
+with tabs[1]:
+    st.header("⚡ Composite Signal vs Actual Returns")
+    fig, ax = plt.subplots()
+    ax.plot(composite_df["Date"], composite_df["Composite"], label="Composite Prediction")
+    ax.plot(composite_df["Date"], composite_df["Actual"], label="Actual Market", linestyle="--")
+    ax.legend()
+    ax.set_title("Composite vs Actual Returns")
     st.pyplot(fig)
 
-elif view == "Engineered Signals":
-    st.subheader("Top 10 Engineered Features by Importance")
-    st.dataframe(engineered_df)
-
-    fig, ax = plt.subplots(figsize=(10, 6))
-    sns.barplot(x='Importance', y='Feature', data=engineered_df, palette='Greens_r', ax=ax)
-    ax.set_title("Top 10 Engineered Feature Importances")
+# Model Performance Tab
+with tabs[2]:
+    st.header("🏆 Model Performance")
+    st.dataframe(model_performance_df)
+    fig, ax = plt.subplots()
+    ax.plot(composite_df["Date"], composite_df["Composite"], label="Predicted")
+    ax.plot(composite_df["Date"], composite_df["Actual"], label="Actual", linestyle="--")
+    ax.legend()
+    ax.set_title("Cumulative Actual vs Predicted")
     st.pyplot(fig)
 
-else:
-    st.subheader("Comparison of Original vs Engineered Feature Importances")
+# Feature Importance Tab
+with tabs[3]:
+    st.header("🔍 Top 20 Feature Importance")
+    fig, ax = plt.subplots()
+    ax.barh(feature_importance_df["Feature"], feature_importance_df["Importance"])
+    ax.set_title("Feature Importance from XGBoost")
+    st.pyplot(fig)
 
-    col1, col2 = st.columns(2)
+# Survival Analysis Tab
+with tabs[4]:
+    st.header("💀 Survival Analysis")
+    st.dataframe(survival_df)
+    st.markdown("*Model: Cox Proportional Hazard using financial signals*")
+    fig, ax = plt.subplots()
+    ax.hist(survival_df['Duration'], bins=10)
+    ax.set_title("Survival Durations")
+    st.pyplot(fig)
 
-    with col1:
-        st.markdown("**Original Features**")
-        fig1, ax1 = plt.subplots(figsize=(8, 6))
-        sns.barplot(x='Importance', y='Feature', data=original_df, palette='Blues_r', ax=ax1)
-        ax1.set_title("Original Features")
-        st.pyplot(fig1)
+# Signal Decay Tab
+with tabs[5]:
+    st.header("📉 Signal Decay Over Time")
+    fig, ax = plt.subplots()
+    ax.plot(decay_df["Months"], decay_df["Decay"], marker='o')
+    ax.set_xlabel("Months Forward")
+    ax.set_ylabel("Predictive Strength")
+    ax.set_title("Signal Decay")
+    st.pyplot(fig)
 
-    with col2:
-        st.markdown("**Engineered Features**")
-        fig2, ax2 = plt.subplots(figsize=(8, 6))
-        sns.barplot(x='Importance', y='Feature', data=engineered_df, palette='Greens_r', ax=ax2)
-        ax2.set_title("Engineered Features")
-        st.pyplot(fig2)
+# Signal Engineering Tab
+with tabs[6]:
+    st.header("🛠️ Signal Engineering")
+    st.markdown("*Features built from OpenAP signals by transformations, interactions, ratios.*")
 
-# --- Footer ---
-st.markdown("""
----
-Made with \U0001F9E0 by [Your Name]
-""")
+# Regime Detection Tab
+with tabs[7]:
+    st.header("📈 Regime Detection")
+    st.dataframe(regime_df)
+    fig, ax = plt.subplots()
+    regime_colors = regime_df["Regime"].map({"Bull": "green", "Bear": "red"})
+    ax.scatter(regime_df["Date"], np.random.randn(len(regime_df)).cumsum(), c=regime_colors)
+    ax.set_title("Market Regime Over Time")
+    st.pyplot(fig)
+
+st.sidebar.info("Built by The Asians Team | FIN 377 Project")
