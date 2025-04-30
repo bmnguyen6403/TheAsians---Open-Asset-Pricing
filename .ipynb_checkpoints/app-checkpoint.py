@@ -56,18 +56,20 @@ with main_tabs[0]:
 
 # --- Dataset ---
 with main_tabs[1]:
-    st.header("📊 Upload Dataset")
-    uploaded = st.file_uploader("Upload your CSV file with financial signals", type="csv")
-    if uploaded:
-        df = pd.read_csv(uploaded)
-        st.session_state["df"] = df
-        st.success("File uploaded successfully!")
-        st.dataframe(df.head())
-    elif "df" in st.session_state:
-        st.info("Using previously uploaded dataset.")
-        st.dataframe(st.session_state["df"].head())
-    else:
-        st.warning("Please upload a CSV file to continue.")
+    st.header("📊 Dataset Overview")
+    st.markdown("""
+    The dataset covers firms from **August 31, 2001, to December 29, 2023**, focusing on signals with a **t-statistic above 3** and high-quality ratings. Key variables include:
+    - Signal name, quality, and t-statistic
+    - Monthly returns (dependent variable) and explanatory variables (lagged by one month)
+
+    The dataset supports four key areas:
+    - **Signal Engineering**: Creating new features from existing signals.
+    - **Regime Detection**: Splitting data by economic periods to assess signal effectiveness.
+    - **Survival Analysis**: Labeling firms by survival outcomes (e.g., crashes or delistings) and durations.
+    - **Signal Decay**: Analyzing how signal strength decays over 1, 3, and 6 months.
+
+    We use **OpenAP** and **CRSP** datasets for firm-specific signals, stock returns, and delisting data, enabling advanced modeling and accurate prediction.
+    """)
 
 
 with main_tabs[2]:
