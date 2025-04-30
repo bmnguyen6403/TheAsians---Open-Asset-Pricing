@@ -27,7 +27,7 @@ tabs = st.tabs([
 
 # Signal Selection Tab
 with tabs[0]:
-    st.header("🔍 Signal Selection
+    st.header("🔍 Signal Selection")
     good_signals = signal_df[(signal_df["Quality"] == "good") & (signal_df["T-Stat"] > 3)]
     st.dataframe(good_signals)
     st.metric(label="Number of Good Signals", value=len(good_signals))
