@@ -222,7 +222,8 @@ Signals showing weaker individual significance could still be useful in aggregat
         """)
         
     if analysis_tab == "Signal Decay":
-        st.header("📊 Signal Decay")      
+        st.header("📊 Signal Decay")
+        st.image("dashboard_ref/decay_graph.png")
         st.markdown("""
 ## Graph Overview
 The graph illustrates the signal decay patterns for the top five financial signals, evaluated based on their Spearman Rank Correlation (IC) with future stock returns over 1-month, 3-month, and 6-month horizons.
@@ -246,8 +247,7 @@ The graph illustrates the signal decay patterns for the top five financial signa
 ## Practical Implications
 Understanding signal decay helps align trading strategies with the appropriate investment horizon. Combining fast-decaying signals (like **roaq**) with slower-decaying signals (like **XFIN**) could enhance portfolio stability and performance across different timeframes.
         """)
-        st.image("dashboard_ref/decay_graph.png")
-
+        
     if analysis_tab == "Signal Engineering":
         st.header("📊 Signal Engineering")
         importance_eng = pd.read_csv("dashboard_ref/importance_eng.csv")
