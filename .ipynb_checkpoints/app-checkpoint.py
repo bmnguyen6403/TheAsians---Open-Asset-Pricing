@@ -39,8 +39,8 @@ with main_tabs[1]:
     st.header("📊 Dataset Overview")
 
     # Paths to the datasets
-    signaldoc_path = "signaldoc_head10.csv"  # Adjust path if needed
-    merged_path = "merged_df_head10.csv"  # Adjust path if needed
+    signaldoc_path = "dashboard_ref/signaldoc_head10.csv"  # Adjust path if needed
+    merged_path = "dashboard_ref/merged_df_head10.csv"  # Adjust path if needed
 
     # Load the first dataset - signaldoc_head10.csv
     signaldoc_df = pd.read_csv(signaldoc_path)
@@ -97,43 +97,43 @@ with main_tabs[2]:
 
         # Display corresponding image based on model choice
         if model_choice == "Composite Signal":
-            st.image("composite_signal.png", caption="Composite Signal", use_container_width=True)
+            st.image("dashboard_ref/composite_signal.png", caption="Composite Signal", use_container_width=True)
             st.markdown("""
             **Summary**:  
             The **Composite Signal** significantly underperforms compared to the **Actual Market** returns. The blue line represents the **Composite Signal**, which seems to lag behind the market, especially during periods of sharp growth. The green dashed line represents the **Actual Market**, which shows much higher returns, particularly after 2010. This highlights potential areas where the composite signal might be missing market trends or signals. The gap indicates that additional features or adjustments may be necessary for this model to better track the market.
             """)
         elif model_choice == "Linear Regression":
-            st.image("LinearRegression_cumulative_return.png", caption="Linear Regression", use_container_width=True)
+            st.image("dashboard_ref/LinearRegression_cumulative_return.png", caption="Linear Regression", use_container_width=True)
             st.markdown("""
             **Summary**:  
             **Linear Regression** captures the general trend of the **Actual Returns** well, but it struggles with larger fluctuations. The predicted returns (blue line) tend to smooth out market extremes, failing to track steep drops or spikes accurately. The model does a good job of reflecting the overall upward trend but lacks precision in volatile periods, such as the 2008 financial crisis. This suggests that linear models may not fully capture market complexities. Further improvements in model complexity, such as adding more features, might improve its predictive power.
             """)
         elif model_choice == "MLP Regressor":
-            st.image("MLPRegressor_cumulative_return.png", caption="MLP Regressor", use_container_width=True)
+            st.image("dashboard_ref/MLPRegressor_cumulative_return.png", caption="MLP Regressor", use_container_width=True)
             st.markdown("""
             **Summary**:  
             The **MLP Regressor** (Multi-Layer Perceptron) provides a better fit than **Linear Regression**, as it captures more of the volatility and trends in the actual returns. However, it still shows some lag in more turbulent periods, particularly around 2008, suggesting that the model might need further tuning. The MLP is smoother and more adaptable, but it still misses sharp fluctuations, which may limit its performance in extreme market scenarios. This model shows promise but needs further improvement in handling market volatility.
             """)
         elif model_choice == "Random Forest Regressor":
-            st.image("RandomForestRegressor_cumulative_return.png", caption="Random Forest Regressor", use_container_width=True)
+            st.image("dashboard_ref/RandomForestRegressor_cumulative_return.png", caption="Random Forest Regressor", use_container_width=True)
             st.markdown("""
             **Summary**:  
             The **Random Forest Regressor** performs well, following the **Actual Returns** (green line) with relatively few discrepancies. It tracks the major market trends and fluctuations, including during the 2008 crisis, better than both **Linear Regression** and **MLP** models. The blue line (predicted values) shows reasonable alignment with the market, but it slightly lags during periods of rapid change. Overall, **Random Forest** is more robust, though it could still be improved for sudden market shocks.
             """)
         elif model_choice == "SVR Regressor":
-            st.image("SVR_cumulative_return.png", caption="Support Vector Regressor", use_container_width=True)
+            st.image("dashboard_ref/SVR_cumulative_return.png", caption="Support Vector Regressor", use_container_width=True)
             st.markdown("""
             **Summary**:  
             The **SVR model** seems to struggle with capturing the real sharp downturns (e.g., 2008) but generally follows the market trend well. The predictions from **SVR** appear smoother and less responsive to extreme market volatility, which might be due to how **SVR** handles outliers and its regularization methods. While it captures the overall trend, it does not react sharply to extreme movements. This could indicate a need for a more dynamic model or tuning to capture short-term shocks.
             """)
         elif model_choice == "XGBoost Regressor":
-            st.image("XGBRegressor_cumulative_return.png", caption="XGBoost Regressor", use_container_width=True)
+            st.image("dashboard_ref/XGBRegressor_cumulative_return.png", caption="XGBoost Regressor", use_container_width=True)
             st.markdown("""
             **Summary**:  
             The **XGBoost Regressor** performs well overall, tracking the actual returns more accurately, especially during volatile periods. It shows superior predictive power compared to other models, such as **Linear Regression** and **SVR**, making it a stronger choice for financial modeling. However, the model might still struggle with predicting extreme market shifts, like the sudden crash in 2008. Despite this, **XGBoost** is a top performer in terms of predictive accuracy and handling complex market conditions.
             """)
 # Load and display the "model_summary.csv" table
-        model_summary_file = "model_summary.csv"  # Adjust path if needed
+        model_summary_file = "dashboard_ref/model_summary.csv"  # Adjust path if needed
         model_summary_df = pd.read_csv(model_summary_file)
         st.subheader("📊 Model Summary")
         st.markdown("Here is the summary of various models' performance metrics.")
