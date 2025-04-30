@@ -1,3 +1,4 @@
+jupyter nbconvert --to script best_model_10_random_good.ipynb
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,6 +14,8 @@ from best_model_10_random_good.ipnyb import (
     decay_df,
     regime_df,
 )
+
+
 
 st.set_page_config(page_title="Stock Return Prediction Dashboard", layout="wide")
 st.title("📊 Stock Return Prediction Full Dashboard")

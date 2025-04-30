@@ -1,105 +1,101 @@
+jupyter nbconvert --to script best_model_10_random_good.ipynb
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 import numpy as np
-import altair as alt
+import shap
+from lifelines import CoxPHFitter
+from best_model_10_random_good.ipnyb import (
+    signal_df,
+    composite_df,
+    model_performance_df,
+    feature_importance_df,
+    survival_df,
+    decay_df,
+    regime_df,
+)
 
-# --- Helper Functions ---
-def generate_placeholder_data(num_rows):
-    """
-    Generates placeholder data for demonstration purposes.
 
-    Returns:
-        pd.DataFrame: A DataFrame with placeholder data.
-    """
-    data = {
-        'Date': pd.date_range(start='2024-01-01', periods=num_rows, freq='D'),
-        'Metric1': np.random.rand(num_rows) * 100,
-        'Metric2': np.random.rand(num_rows) * 50,
-        'Metric3': np.random.rand(num_rows) * 200,
-        'Category': np.random.choice(['A', 'B', 'C', 'D'], num_rows),
-        'Value': np.random.randint(1, 100, num_rows),
-    }
-    return pd.DataFrame(data)
 
-# --- Configuration ---
-PAGE_CONFIG = {
-    "page_title": "Operations Dashboard",
-    "page_icon": "📊",  # You can use an emoji here
-    "layout": "wide",  # Use the wide layout
-    "initial_sidebar_state": "expanded",  # Keep the sidebar expanded
-}
-st.set_page_config(**PAGE_CONFIG)
+st.set_page_config(page_title="Stock Return Prediction Dashboard", layout="wide")
+st.title("📊 Stock Return Prediction Full Dashboard")
 
-# --- Data Loading ---
-# Generate placeholder data
-num_rows = 365  # Example: data for one year
-df = generate_placeholder_data(num_rows)
+# Create Tabs
+tabs = st.tabs([
+    "Signal Selection", "Composite Signal", "Model Performance",
+    "Feature Importance", "Survival Analysis", "Signal Decay",
+    "Signal Engineering", "Regime Detection"
+])
 
-# --- Sidebar ---
-st.sidebar.title("Filters")
-date_range = st.sidebar.date_input("Date Range", [df['Date'].min(), df['Date'].max()], key="date_range")
-category_filter = st.sidebar.multiselect("Category", df['Category'].unique(), default=df['Category'].unique())
+# Signal Selection Tab
+with tabs[0]:
+    st.header("🔍 Signal Selection")
+    good_signals = signal_df[(signal_df["Quality"] == "good") & (signal_df["T-Stat"] > 3)]
+    st.dataframe(good_signals)
+    st.metric(label="Number of Good Signals", value=len(good_signals))
 
-# --- Filtering ---
-# Apply date filter
-start_date, end_date = np.datetime64(date_range[0]), np.datetime64(date_range[1])
-filtered_df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+# Composite Signal Tab
+with tabs[1]:
+    st.header("⚡ Composite Signal vs Actual Returns")
+    fig, ax = plt.subplots()
+    ax.plot(composite_df["Date"], composite_df["Composite"], label="Composite Prediction")
+    ax.plot(composite_df["Date"], composite_df["Actual"], label="Actual Market", linestyle="--")
+    ax.legend()
+    ax.set_title("Composite vs Actual Returns")
+    st.pyplot(fig)
 
-# Apply category filter
-filtered_df = filtered_df[filtered_df['Category'].isin(category_filter)]
+# Model Performance Tab
+with tabs[2]:
+    st.header("🏆 Model Performance")
+    st.dataframe(model_performance_df)
+    fig, ax = plt.subplots()
+    ax.plot(composite_df["Date"], composite_df["Composite"], label="Predicted")
+    ax.plot(composite_df["Date"], composite_df["Actual"], label="Actual", linestyle="--")
+    ax.legend()
+    ax.set_title("Cumulative Actual vs Predicted")
+    st.pyplot(fig)
 
-# --- Main Content ---
-st.title("Operations Dashboard")
+# Feature Importance Tab
+with tabs[3]:
+    st.header("🔍 Top 20 Feature Importance")
+    fig, ax = plt.subplots()
+    ax.barh(feature_importance_df["Feature"], feature_importance_df["Importance"])
+    ax.set_title("Feature Importance from XGBoost")
+    st.pyplot(fig)
 
-# --- KPI Metrics ---
-st.header("Key Performance Indicators")
-kpi_cols = st.columns(3)  # Adjust the number of columns as needed
+# Survival Analysis Tab
+with tabs[4]:
+    st.header("💀 Survival Analysis")
+    st.dataframe(survival_df)
+    st.markdown("*Model: Cox Proportional Hazard using financial signals*")
+    fig, ax = plt.subplots()
+    ax.hist(survival_df['Duration'], bins=10)
+    ax.set_title("Survival Durations")
+    st.pyplot(fig)
 
-# Calculate some example KPIs.  Replace these with your actual KPI calculations.
-kpi1_value = filtered_df['Metric1'].mean()
-kpi2_value = filtered_df['Metric2'].sum()
-kpi3_value = filtered_df['Metric3'].max()
+# Signal Decay Tab
+with tabs[5]:
+    st.header("📉 Signal Decay Over Time")
+    fig, ax = plt.subplots()
+    ax.plot(decay_df["Months"], decay_df["Decay"], marker='o')
+    ax.set_xlabel("Months Forward")
+    ax.set_ylabel("Predictive Strength")
+    ax.set_title("Signal Decay")
+    st.pyplot(fig)
 
-with kpi_cols[0]:
-    st.metric("Average Metric 1", f"{kpi1_value:.2f}")
-with kpi_cols[1]:
-    st.metric("Total Metric 2", f"{kpi2_value:.2f}")
-with kpi_cols[2]:
-    st.metric("Max Metric 3", f"{kpi3_value:.2f}")
+# Signal Engineering Tab
+with tabs[6]:
+    st.header("🛠️ Signal Engineering")
+    st.markdown("*Features built from OpenAP signals by transformations, interactions, ratios.*")
 
-# --- Charts ---
-st.header("Data Visualizations")
-chart_cols = st.columns(2)  # Create two columns for charts
+# Regime Detection Tab
+with tabs[7]:
+    st.header("📈 Regime Detection")
+    st.dataframe(regime_df)
+    fig, ax = plt.subplots()
+    regime_colors = regime_df["Regime"].map({"Bull": "green", "Bear": "red"})
+    ax.scatter(regime_df["Date"], np.random.randn(len(regime_df)).cumsum(), c=regime_colors)
+    ax.set_title("Market Regime Over Time")
+    st.pyplot(fig)
 
-# Example 1: Line chart
-with chart_cols[0]:
-    line_chart = alt.Chart(filtered_df).mark_line().encode(
-        x='Date',
-        y='Metric1',
-        tooltip=['Date', 'Metric1']
-    ).properties(
-        title='Metric 1 Over Time'
-    ).interactive()
-    st.altair_chart(line_chart, use_container_width=True)
-
-# Example 2: Bar chart
-with chart_cols[1]:
-    bar_chart = alt.Chart(filtered_df).mark_bar().encode(
-        x='Category',
-        y='Value',
-        color='Category',
-        tooltip=['Category', 'Value']
-    ).properties(
-        title='Value by Category'
-    ).interactive()
-    st.altair_chart(bar_chart, use_container_width=True)
-
-# Example 3: Area Chart
-area_chart = alt.Chart(filtered_df).mark_area().encode(
-        x='Date',
-        y='Metric2',
-        tooltip = ['Date', 'Metric2']
-    ).properties(
-        title = "Metric 2 Over Time"
-    ).interactive()
-st.altair_chart(area_chart, use_container_width=True)
+st.sidebar.info("Built by The Asians Team | FIN 377 Project")
