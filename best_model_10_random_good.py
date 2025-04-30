@@ -274,6 +274,7 @@ importance_df2 = pd.DataFrame({
 
 importance_df2 = importance_df2.sort_values(by='Importance', ascending=False).head(20)
 
+import seaborn as sns
 plt.figure(figsize=(8, 6))
 sns.barplot(x='Importance', y='Feature', data=importance_df2, palette='viridis')
 plt.title("Top 20 Feature Importance")
