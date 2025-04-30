@@ -150,6 +150,7 @@ with main_tabs[2]:
                     """)
 
     if analysis_tab == "Feature Importance":
+        st.image("dashboard_ref/top20feature.png")
         st.header("📊 Feature Importance")
         st.markdown("""
         **Top 20 Feature Importance:**  
@@ -218,3 +219,60 @@ A hazard ratio (**exp(coef)**) greater than 1 suggests the signal increases the 
 
 Signals showing weaker individual significance could still be useful in aggregated models or after applying feature engineering. By combining both risk-enhancing and protective signals, we can design more nuanced models that better account for multiple dimensions of survival dynamics.
         """)
+        
+    if analysis_tab == "Signal Decay":
+        st.header("📊 Signal Decay")      
+        st.markdown("""
+## Graph Overview
+The graph illustrates the signal decay patterns for the top five financial signals, evaluated based on their Spearman Rank Correlation (IC) with future stock returns over 1-month, 3-month, and 6-month horizons.
+
+## Key Observations
+
+| Signal | Behavior | Interpretation |
+|:--------|:---------|:----------------|
+| **XFIN** | IC **increases** over time | Indicates that external financing activity becomes **more predictive** over longer holding periods. |
+| **TrendFactor** | IC **decreases moderately** | Maintains reasonable predictive power across 6 months, suitable for **medium-term strategies**. |
+| **NetEquityFinance** | IC **declines steadily** | Predictive strength fades over time; better for **short-term stock selection**. |
+| **roaq** | IC **declines sharply** | Very strong short-term predictor, but effectiveness **diminishes rapidly** after 1 month. |
+| **retConglomerate** | IC **consistently weakens** | Shows the lowest predictive power overall, with a steady decay over time. |
+
+## Overall Conclusions
+- **XFIN** is the most promising for **long-term investment horizons**.
+- **roaq** offers strong opportunities for **short-term trading**.
+- **TrendFactor** is relatively stable, supporting **medium-term portfolio construction**.
+- **NetEquityFinance** and **retConglomerate** show weaker and diminishing predictive abilities, and may require combination with other signals for effective use.
+
+## Practical Implications
+Understanding signal decay helps align trading strategies with the appropriate investment horizon. Combining fast-decaying signals (like **roaq**) with slower-decaying signals (like **XFIN**) could enhance portfolio stability and performance across different timeframes.
+        """)
+        st.image("dashboard_ref/decay_graph.png")
+
+    if analysis_tab == "Signal Engineering":
+        st.header("📊 Signal Engineering")
+        importance_eng = pd.read_csv("dashboard_ref/importance_eng.csv")
+        orig_importance = pd.read_csv("dashboard_ref/orig_importance.csv")
+        
+        # Create two columns for side-by-side display
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.subheader("Importance Engineering")
+            st.dataframe(importance_eng)
+
+        with col2:
+            st.subheader("Original Importance")
+            st.dataframe(orig_importance)
+
+        st.markdown("""
+        - *Original Signals:* The single most important original feature was retConglomerate, contributing over 27% of the model's decision power, followed by CustomerMomentum, betaVIX, and IntanEP.
+- *Engineered Features:* The top engineered features were mainly moving averages of the strongest original signals, such as retConglomerate_MA3, MomSeason16YrPlus_MA3, and CustomerMomentum_MA3. The importance was spread more evenly among the top engineered features, with no single feature dominating the model.
+
+## Analytical Insights
+The comparison revealed that while some signals, like retConglomerate, were extremely powerful even in their raw form, many others such as CustomerMomentum, TrendFactor, and betaVIX improved significantly after engineering transformations like smoothing. Engineered features produced a more balanced feature importance distribution, reducing over-reliance on any single predictor, which is desirable for model robustness.
+
+The fact that moving averages improved performance suggests that financial signals often contain substantial short-term noise that can be mitigated through simple smoothing techniques. Meanwhile, interaction terms and ratios may capture deeper relationships between financial metrics.
+
+## Conclusion
+Through this project, I demonstrated that thoughtful signal engineering can materially improve model performance in financial prediction tasks. By combining top raw signals with the best engineered transformations, a hybrid model could achieve better generalization, higher Sharpe ratios, and more stable predictive performance. This highlights the value of both strong signal selection and strategic feature engineering when building systematic investment models
+""")
+
