@@ -175,6 +175,7 @@ plt.title("Cumulative Return: Composite Signal vs Actual Values")
 plt.xlabel("Date")  # or "Index" if you're using indices
 plt.ylabel("Cumulative Return")
 plt.legend(loc='best')
+plt.savefig("composite_signal.png")
 
 plt.grid(True)
 plt.show()
@@ -183,8 +184,19 @@ composite_cumulative_return, actual_cumulative_return = composite_cumulative_ret
 correlation = composite_cumulative_return.corr(actual_cumulative_return)
 mse = mean_squared_error(actual_cumulative_return, composite_cumulative_return)
 
+# Calculate summary statistics for Composite Signal
+mean_return = composite_cumulative_return.mean()
+volatility = composite_cumulative_return.std()
+sharpe_ratio = mean_return / volatility
+
+# Print the output summary
+print(f"Composite Signal vs Actual Comparison:")
 print(f"Correlation: {correlation}")
 print(f"Mean Squared Error: {mse}")
+print(f"Mean Return: {mean_return}")
+print(f"Volatility: {volatility}")
+print(f"Sharpe Ratio: {sharpe_ratio}")
+print(f"T-Statistic: {composite_cumulative_return.mean() / composite_cumulative_return.std()}")  # Approximate T-statistic for composite signal
 
 
 # # Cumulative Return: Composite Signal vs Actual Values
@@ -237,6 +249,67 @@ plt.show()
 # In[18]:
 
 
+# Create a function for summary statistics
+def summary_stats(predictions):
+    return {
+        "Mean Return": predictions.mean(),
+        "Volatility": predictions.std(),
+        "Sharpe Ratio": predictions.mean() / predictions.std(),
+    }
+
+# Define your models
+algos = {
+    "LinearRegression": LinearRegression(),
+    "RandomForestRegressor": RandomForestRegressor(),
+    "XGBRegressor": xgb_model,
+    "SVR": SVR(),
+    "MLPRegressor": MLPRegressor()
+}
+
+# Create a list to store model statistics
+model_summary = []
+
+# Loop through each model to create a graph, print the stats, and store them
+for model_name, model in algos.items():
+    # Fit the model
+    model.fit(X, y)
+    
+    # Generate predictions
+    y_pred = pd.Series(model.predict(X), index=X.index)
+    
+    # Calculate statistics
+    mse = mean_squared_error(y, y_pred)
+    correlation = y_pred.corr(y)
+    stats = summary_stats(y_pred)
+    t_stat = model.score(X, y)  # T-Statistic of the model's prediction
+    
+    # Collect stats into a dictionary for each model
+    model_stats = {
+        "Model": model_name,
+        "Mean Squared Error": mse,
+        "Correlation": correlation,
+        "Mean Return": stats["Mean Return"],
+        "Volatility": stats["Volatility"],
+        "Sharpe Ratio": stats["Sharpe Ratio"],
+        "T-Statistic": t_stat,
+        "Start Date": X.index.min(),
+        "End Date": X.index.max()
+    }
+    
+    # Append the model stats to the summary list
+    model_summary.append(model_stats)
+    
+# Convert the model summary into a DataFrame for better display
+model_summary_df = pd.DataFrame(model_summary)
+
+# Display the summary table
+print(model_summary_df)
+model_summary_df.to_csv("model_summary.csv", index = False)
+
+
+# In[19]:
+
+
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error
 import pandas as pd
@@ -262,7 +335,7 @@ def summary_stats(predictions):
 algos = {
     "LinearRegression": LinearRegression(),
     "RandomForestRegressor": RandomForestRegressor(),
-    "XGBRegressor": xgb_model(),  # Make sure you initialize it correctly
+    "XGBRegressor": xgb_model,  # Make sure you initialize it correctly
     "SVR": SVR(),
     "MLPRegressor": MLPRegressor()
 }
@@ -338,7 +411,7 @@ for model_name, model in algos.items():
 # - Simpler models like Linear Regression or SVR can still add value but require careful tuning to compete with ensemble-based approaches.
 # The plot compares cumulative returns between the actual market performance (green dotted line) and the predictions from five machine learning models:
 
-# In[19]:
+# In[20]:
 
 
 feature_importance = xgb_model.feature_importances_
@@ -370,19 +443,19 @@ plt.show()
 # - Mid-importance features may offer opportunities for complementary signal interactions and diversification within composite signals.
 # 
 
-# In[20]:
+# In[21]:
 
 
 #allsignal = openap.dl_all_signals('pandas')
 
 
-# In[21]:
+# In[22]:
 
 
 #allsignal.head()
 
 
-# In[22]:
+# In[23]:
 
 
 top_20_signals = [
@@ -394,49 +467,49 @@ top_20_signals = [
 #allsignal_20 = allsignal[["permno", "yyyymm"] + top_20_signals]
 
 
-# In[23]:
+# In[24]:
 
 
 #allsignal_20 = allsignal_20.dropna(thresh=int(len(top_20_signals)*0.8))
 
 
-# In[24]:
+# In[25]:
 
 
 #allsignal_20.to_csv('allsignal_20.csv.gz', index=False, compression='gzip')
 
 
-# In[25]:
+# In[26]:
 
 
 allsignal_20 = pd.read_csv("allsignal_20.csv.gz", compression = 'gzip')
 
 
-# In[26]:
+# In[27]:
 
 
 allsignal_20.head(10)
 
 
-# In[27]:
+# In[28]:
 
 
 crsp_df = pd.read_csv("crsp_data.csv")
 
 
-# In[28]:
+# In[29]:
 
 
 crsp_df.info()
 
 
-# In[29]:
+# In[30]:
 
 
 crsp_df.head(10)
 
 
-# In[30]:
+# In[31]:
 
 
 crsp_df['date'] = pd.to_datetime(crsp_df['date'])   
@@ -453,7 +526,7 @@ merged_df = merged_df.dropna(subset=["ret"])
 merged_df
 
 
-# In[31]:
+# In[32]:
 
 
 merged_df.head(10).to_csv("merged_df_head10.csv", index = False)
@@ -461,7 +534,7 @@ merged_df.head(10).to_csv("merged_df_head10.csv", index = False)
 
 # # Survival Analysis - When will a stock dies?
 
-# In[32]:
+# In[33]:
 
 
 import pandas as pd
@@ -496,7 +569,7 @@ cph.fit(survival_df, duration_col='duration', event_col='event')
 cph.print_summary()
 
 
-# In[33]:
+# In[34]:
 
 
 print("Shape:", survival_df.shape)
@@ -506,21 +579,21 @@ print("\nMissing values:")
 print(survival_df.isnull().sum())
 
 
-# In[34]:
+# In[44]:
 
 
-summary_df = cph.summary.reset_index()
+# Access the summary as a DataFrame and save it to a CSV file
+summary_df = cph.summary
+summary_df.to_csv("surv_analysis.csv", index=False)
 
-summary_df.columns = ['Acronym' if col == summary_df.columns[0] else col for col in summary_df.columns]
+# Print the summary to console (optional)
+print(summary_df)
 
-summary_df['Detailed Definition'] = summary_df['Acronym'].map(
-    signal_df.set_index('Acronym')['Detailed Definition']
-)
 
-cols = ['Acronym', 'Detailed Definition'] + [col for col in summary_df.columns if col not in ['Acronym', 'Detailed Definition']]
-summary_df = summary_df[cols]
+# In[ ]:
 
-summary_df
+
+
 
 
 # ## Signal Analysis Summary
@@ -578,7 +651,7 @@ summary_df
 
 # # Signal Decay Analysis
 
-# In[35]:
+# In[36]:
 
 
 import pandas as pd
@@ -636,7 +709,13 @@ top_signals = decay_df.sort_values('IC_avg', ascending=False).head(top_n)['Signa
 decay_df
 
 
-# In[36]:
+# In[45]:
+
+
+decay_df.to_csv("decay.csv", index = False)
+
+
+# In[46]:
 
 
 plt.figure(figsize=(8, 5))
@@ -666,6 +745,7 @@ plt.legend(
     frameon=False
 )
 plt.tight_layout()
+plt.savefig("decay_graph.png")
 plt.show()
 
 
@@ -699,7 +779,7 @@ plt.show()
 # # Signal Engineering
 # 
 
-# In[37]:
+# In[38]:
 
 
 # --- Signal Engineering Section ---
@@ -731,7 +811,7 @@ merged_df2 = merged_df2.dropna(subset=["ret"])
 
 
 
-# In[38]:
+# In[39]:
 
 
 engineered_features = [col for col in allsignal_20_new.columns if any(keyword in col for keyword in ['_', 'MA3', 'MA6'])]
@@ -746,7 +826,13 @@ print("Top Engineered Features by Importance:")
 print(importance_eng.head(10))
 
 
-# In[39]:
+# In[49]:
+
+
+importance_eng.head(10).to_csv("importance_eng.csv", index = False)
+
+
+# In[40]:
 
 
 # Use your clean top 20 signals directly
@@ -773,6 +859,12 @@ importance_df_orig = importance_df_orig.sort_values(by='Importance', ascending=F
 
 print("Top 10 Original Features by Importance:")
 print(importance_df_orig)
+
+
+# In[48]:
+
+
+importance_df_orig.to_csv("orig_importance.csv", index = False)
 
 
 # # Signal Engineering Project: Code and Results Walkthrough
@@ -816,7 +908,7 @@ print(importance_df_orig)
 
 # # Regime Detection
 
-# In[40]:
+# In[41]:
 
 
 import pandas as pd
@@ -836,7 +928,7 @@ print("\nTop 10 columns by % missing:")
 display(nan_table.head(10))
 
 
-# In[41]:
+# In[ ]:
 
 
 import pandas as pd, numpy as np, gc, seaborn as sns, matplotlib.pyplot as plt
@@ -925,10 +1017,12 @@ ax = imp_pct.loc[top_feats].T.plot.bar(stacked=True, width=0.85)
 ax.set_ylabel("Relative importance")
 ax.set_title(f"Top-{k} feature importance by decade")    # dynamic title
 ax.legend(bbox_to_anchor=(1.02, 1), loc="upper left")
+plt.savefig("top22featuredecade.csv", index = False)
 plt.tight_layout(); plt.show()
 
 sns.heatmap(imp_raw.rank(ascending=False).corr("spearman"),
             annot=True, vmin=0, vmax=1, cmap="viridis")
+plt.savefig("spearman.png")
 plt.title("Spearman correlation of importance rankings"); plt.show()
 
 print("\nIn-sample R² by regime:", r2_scores)
@@ -1007,7 +1101,7 @@ print("\nIn-sample R² by regime:", r2_scores)
 # 
 # 
 
-# In[42]:
+# In[43]:
 
 
 get_ipython().system('jupyter nbconvert --to script best_model_10_random_good.ipynb')
