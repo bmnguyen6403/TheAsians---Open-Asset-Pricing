@@ -72,18 +72,7 @@ with main_tabs[2]:
         "Regime-Aware Models"
     ])
 
-    # Sidebar will only be available when "Analysis" tab is selected
     if analysis_tab == "Cumulative vs Predicted":
-        # Show the sidebar for model selection
-        model_choice = st.sidebar.radio("Choose a Model", [
-            "Composite Signal",
-            "Linear Regression",
-            "MLP Regressor",
-            "Random Forest Regressor",
-            "SVR Regressor",
-            "XGBoost Regressor"
-        ])
-
         st.subheader("📊 Cumulative and Predicted Returns")
         st.markdown("""
         This section compares cumulative returns across various models:
@@ -94,53 +83,65 @@ with main_tabs[2]:
         - Support Vector Regressor (SVR)
         - XGBoost Regressor
         """)
-        st.success("Use the sidebar to the left to navigate models")
 
-        # Display corresponding image based on model choice
-        if model_choice == "Composite Signal":
+        # Create subtabs for each model
+        model_tabs = st.tabs([
+            "Composite Signal",
+            "Linear Regression",
+            "MLP Regressor",
+            "Random Forest Regressor",
+            "SVR Regressor",
+            "XGBoost Regressor"
+        ])
+
+        with model_tabs[0]:
             st.image("dashboard_ref/composite_signal.png", caption="Composite Signal", use_container_width=True)
             st.markdown("""
             **Summary**:  
             **Composite Signal** significantly underperforms compared to the **Actual Market** returns, as indicated by the gap between the predicted (blue line) and actual (green dashed line) values. The **Composite Signal** lags the market, especially during periods of sharp growth, suggesting that the model might be missing critical market trends. The actual returns, particularly after 2010, surpass the predictions made by the composite signal. This performance discrepancy highlights that additional features, adjustments, or improvements in model complexity are necessary to better capture market dynamics and improve predictive accuracy.\n
             The **low correlation** suggests that the model is not capturing the market's behavior accurately, and the **Sharpe Ratio** indicates that while the model has positive returns, they are not well-adjusted for risk. Further tuning and potentially the introduction of more relevant features could improve the model's performance.
             """)
-        elif model_choice == "Linear Regression":
+        
+        with model_tabs[1]:
             st.image("dashboard_ref/LinearRegression_cumulative_return.png", caption="Linear Regression", use_container_width=True)
             st.markdown("""
             **Summary**:  
             The **Linear Regression** model captures the general trend of the **Actual Returns** well, but it struggles with larger fluctuations, particularly during volatile market periods like the 2008 financial crisis. The blue line representing the predicted returns tends to smooth out market extremes, failing to track sharp drops or spikes accurately. While **Linear Regression** reflects the overall upward trend of the market, it lacks precision in more turbulent times, such as during market crashes. This suggests that linear models may not fully capture the complexities and nonlinearities of the market, and adding more features could improve the model's predictive power.\n
             The **correlation** shows a reasonable fit to the market data, though there is room for improvement. The **Sharpe Ratio** suggests the model's returns are not well-adjusted for volatility, and the **T-Statistic** indicates that the model's significance is moderate.
             """)
-        elif model_choice == "MLP Regressor":
+        with model_tabs[2]:
             st.image("dashboard_ref/MLPRegressor_cumulative_return.png", caption="MLP Regressor", use_container_width=True)
             st.markdown("""
             **Summary**:  
             The **MLP Regressor** provides a better fit compared to **Linear Regression**, as it captures more of the volatility and trends in the actual returns. It adapts well to the changing dynamics of the market, but still exhibits some lag during extreme periods, particularly in 2008. While the **MLP Regressor** does a better job of handling market fluctuations compared to simpler models, it still misses sharp market movements, which can limit its effectiveness during times of market stress. The model shows promise, but fine-tuning its architecture or adding more features could improve its performance in volatile markets.\n
             With a high **correlation**, the model provides a strong fit to the actual market returns. The **Sharpe Ratio** reflects an improved risk-adjusted return, though there’s room for better performance during market shocks. The **T-Statistic** is reasonably significant, indicating that the model’s predictions are statistically meaningful.
             """)
-        elif model_choice == "Random Forest Regressor":
+        
+        with model_tabs[3]:
             st.image("dashboard_ref/RandomForestRegressor_cumulative_return.png", caption="Random Forest Regressor", use_container_width=True)
             st.markdown("""
             **Summary**:  
             The **Random Forest Regressor** performs well in tracking the major trends of the **Actual Returns**, including significant market fluctuations such as the 2008 financial crisis. The predicted values (blue line) show a reasonable alignment with the actual returns (green line), though it slightly lags during periods of rapid market change. Despite this, the **Random Forest** model demonstrates higher robustness compared to **Linear Regression** and **MLP**, and it handles sudden market shifts better. Overall, **Random Forest** is a strong performer, but could still benefit from improvements to better capture extreme market movements.\n
             The **correlation** of 1.000000 indicates a perfect fit, which is expected given how **Random Forest** works by aggregating multiple decision trees. However, the **Sharpe Ratio** suggests that the model’s returns are not very well-adjusted for risk, and further tuning could improve its performance.
             """)
-        elif model_choice == "SVR Regressor":
+        with model_tabs[4]:
             st.image("dashboard_ref/SVR_cumulative_return.png", caption="Support Vector Regressor", use_container_width=True)
             st.markdown("""
             **Summary**:  
             The **SVR Regressor** seems to struggle with capturing sharp downturns, particularly during significant market crises like the 2008 financial crisis. While it follows the general market trend well, the predicted returns appear smoother and less responsive to extreme market movements. This suggests that **SVR** may be too conservative and not sufficiently sensitive to market shocks. The model could be improved by adjusting its regularization parameters or incorporating more dynamic features to capture sudden market fluctuations.\n
             The **correlation** indicates a fairly good fit, but the model may be too smooth to react sharply to volatile periods. The **Sharpe Ratio** suggests that **SVR** offers a decent risk-adjusted return, but could be further optimized to capture extreme market changes.
             """)
-        elif model_choice == "XGBoost Regressor":
+        
+        with model_tabs[5]:
             st.image("dashboard_ref/XGBRegressor_cumulative_return.png", caption="XGBoost Regressor", use_container_width=True)
             st.markdown("""
             **Summary**:  
             The **XGBoost Regressor** performs well overall, tracking the **Actual Returns** more accurately than most other models, especially during volatile periods. It provides superior predictive power, handling complex market conditions effectively. While it performs well overall, the model may still face challenges in predicting sudden market shifts, like the sharp crash in 2008. Nevertheless, **XGBoost** is a top performer in terms of predictive accuracy and managing market dynamics, making it one of the most reliable models for stock return prediction.\n
             The **correlation** demonstrates a perfect fit to the market returns, making **XGBoost** one of the strongest models for stock prediction. However, the **Sharpe Ratio** suggests that the model's returns could be more adjusted for risk, and additional tuning may improve its performance during extreme market conditions.
             """)
-# Load and display the "model_summary.csv" table
-        model_summary_df = pd.read_csv("dashboard_ref/model_summary.csv"  )
+        
+        # Load and display the "model_summary.csv" table
+        model_summary_df = pd.read_csv("dashboard_ref/model_summary.csv")
         st.subheader("📊 Model Summary")
         st.markdown("Here is the summary of various models' performance metrics.")
         st.dataframe(model_summary_df)
@@ -149,7 +150,7 @@ with main_tabs[2]:
         **Linear Regression** and **SVR** struggle to capture extreme market fluctuations and have lower **Sharpe Ratios**, suggesting they need further enhancements.\n
         The **Composite Signal** lags behind the actual market and may benefit from additional features or adjustments to better capture market trends.
                     """)
-
+    
     if analysis_tab == "Feature Importance":
         st.image("dashboard_ref/top20feature.png")
         st.header("📊 Feature Importance")
