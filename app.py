@@ -48,7 +48,7 @@ with main_tabs[1]:
     st.markdown("""
     **`signaldoc_head10.csv`**: This dataset contains a list of **financial signals** with their respective **signal names**, **quality ratings**, and **t-statistics**. It is used to identify the most statistically significant signals based on quality and reliability for stock prediction.
     """)
-    st.dataframe(signaldoc_df.head())
+    st.dataframe(signaldoc_df)
 
     # Load the second dataset - merged_df_head10.csv
     merged_df = pd.read_csv(merged_path)
@@ -56,7 +56,7 @@ with main_tabs[1]:
     st.markdown("""
     **`merged_df_head10.csv`**: This dataset is the **final merged dataset**, filtered based on the **top 20 features** selected from the signal quality and t-statistics. It contains **monthly returns** and **lagged explanatory variables**, making it ready for modeling and analysis of stock predictions.
     """)
-    st.dataframe(merged_df.head())
+    st.dataframe(merged_df)
 
 # --- Hypothesis-Driven Analysis Tab ---
 with main_tabs[2]:
