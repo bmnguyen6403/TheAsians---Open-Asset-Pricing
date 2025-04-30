@@ -21,7 +21,7 @@ from sklearn.svm import SVR
 svr = SVR(kernel='rbf')
 from sklearn.metrics import mean_squared_error
 from sklearn.neural_network import MLPRegressor
-get_ipython().system('pip install shap')
+# get_ipython().system('pip install shap')
 import shap
 
 MLP = MLPRegressor(hidden_layer_sizes=(50,), max_iter=1000)
