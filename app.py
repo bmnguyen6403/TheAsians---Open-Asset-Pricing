@@ -50,7 +50,7 @@ with main_tabs[0]:
     - <span style='color:#AF7AC5'><strong>H4</strong></span>: Regime-aware models outperform static models.  
     """, unsafe_allow_html=True)
 
-    st.success("Use the tabs above to explore each hypothesis and upload your data to analyze real results.")
+    st.success("Use the tabs above to explore each hypothesis.")
 
 
 
