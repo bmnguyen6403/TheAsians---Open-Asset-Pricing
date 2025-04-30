@@ -425,6 +425,7 @@ importance_df2 = importance_df2.sort_values(by='Importance', ascending=False).he
 plt.figure(figsize=(8, 6))
 sns.barplot(x='Importance', y='Feature', data=importance_df2, palette='viridis')
 plt.title("Top 20 Feature Importance")
+plt.savefig("top20feature.png")
 plt.show()
 
 
@@ -579,7 +580,7 @@ print("\nMissing values:")
 print(survival_df.isnull().sum())
 
 
-# In[44]:
+# In[35]:
 
 
 # Access the summary as a DataFrame and save it to a CSV file
@@ -709,13 +710,13 @@ top_signals = decay_df.sort_values('IC_avg', ascending=False).head(top_n)['Signa
 decay_df
 
 
-# In[45]:
+# In[37]:
 
 
 decay_df.to_csv("decay.csv", index = False)
 
 
-# In[46]:
+# In[38]:
 
 
 plt.figure(figsize=(8, 5))
@@ -779,7 +780,7 @@ plt.show()
 # # Signal Engineering
 # 
 
-# In[38]:
+# In[39]:
 
 
 # --- Signal Engineering Section ---
@@ -811,7 +812,7 @@ merged_df2 = merged_df2.dropna(subset=["ret"])
 
 
 
-# In[39]:
+# In[ ]:
 
 
 engineered_features = [col for col in allsignal_20_new.columns if any(keyword in col for keyword in ['_', 'MA3', 'MA6'])]
@@ -826,13 +827,13 @@ print("Top Engineered Features by Importance:")
 print(importance_eng.head(10))
 
 
-# In[49]:
+# In[ ]:
 
 
 importance_eng.head(10).to_csv("importance_eng.csv", index = False)
 
 
-# In[40]:
+# In[ ]:
 
 
 # Use your clean top 20 signals directly
@@ -861,7 +862,7 @@ print("Top 10 Original Features by Importance:")
 print(importance_df_orig)
 
 
-# In[48]:
+# In[ ]:
 
 
 importance_df_orig.to_csv("orig_importance.csv", index = False)
@@ -908,7 +909,7 @@ importance_df_orig.to_csv("orig_importance.csv", index = False)
 
 # # Regime Detection
 
-# In[41]:
+# In[ ]:
 
 
 import pandas as pd
@@ -1017,7 +1018,7 @@ ax = imp_pct.loc[top_feats].T.plot.bar(stacked=True, width=0.85)
 ax.set_ylabel("Relative importance")
 ax.set_title(f"Top-{k} feature importance by decade")    # dynamic title
 ax.legend(bbox_to_anchor=(1.02, 1), loc="upper left")
-plt.savefig("top22featuredecade.csv", index = False)
+plt.savefig("top22featuredecade.png")
 plt.tight_layout(); plt.show()
 
 sns.heatmap(imp_raw.rank(ascending=False).corr("spearman"),
@@ -1101,7 +1102,7 @@ print("\nIn-sample R² by regime:", r2_scores)
 # 
 # 
 
-# In[43]:
+# In[ ]:
 
 
 get_ipython().system('jupyter nbconvert --to script best_model_10_random_good.ipynb')
