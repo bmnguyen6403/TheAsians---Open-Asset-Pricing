@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import shap
-from best_model_10_random_good import (
+from best_model_10_random_good.py import (
     signal_df,
     composite_df,
     model_performance_df,
