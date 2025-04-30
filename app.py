@@ -1,4 +1,4 @@
-jupyter nbconvert --to script best_model_10_random_good.ipynb
+!jupyter nbconvert --to script best_model_10_random_good.ipynb
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
