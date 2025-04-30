@@ -71,6 +71,25 @@ with main_tabs[1]:
     We use **OpenAP** and **CRSP** datasets for firm-specific signals, stock returns, and delisting data, enabling advanced modeling and accurate prediction.
     """)
 
+    # Path to the datasets
+    signaldoc_path = "signaldoc_head10.csv"  # Adjust path if needed
+    merged_path = "merged_df_head10.csv"  # Adjust path if needed
+
+    # Load the first dataset - signaldoc_head10.csv
+    signaldoc_df = pd.read_csv(signaldoc_path)
+    st.subheader("📑 Signal Documentation")
+    st.markdown("""
+    **`signaldoc_head10.csv`**: This dataset contains a list of **financial signals** with their respective **signal names**, **quality ratings**, and **t-statistics**. It is used to identify the most statistically significant signals based on quality and reliability for stock prediction.
+    """)
+    st.dataframe(signaldoc_df.head())
+
+    # Load the second dataset - merged_df_head10.csv
+    merged_df = pd.read_csv(merged_path)
+    st.subheader("📈 Merged Data (Filtered by Top Features)")
+    st.markdown("""
+    **`merged_df_head10.csv`**: This dataset is the **final merged dataset**, filtered based on the **top 20 features** selected from the signal quality and t-statistics. It contains **monthly returns** and **lagged explanatory variables**, making it ready for modeling and analysis of stock predictions.
+    """)
+    st.dataframe(merged_df.head())
 
 with main_tabs[2]:
     st.header("📈 Hypothesis-Driven Analysis")
