@@ -21,9 +21,9 @@ from sklearn.svm import SVR
 svr = SVR(kernel='rbf')
 from sklearn.metrics import mean_squared_error
 from sklearn.neural_network import MLPRegressor
-# get_ipython().system('pip install shap')
+#!pip install shap
 import shap
-# get_ipython().system('pip install seaborn')
+#!pip install seaborn
 import seaborn as sns
 MLP = MLPRegressor(hidden_layer_sizes=(50,), max_iter=1000)
 
@@ -45,6 +45,12 @@ signal_df = openap.dl_signal_doc('pandas')
 
 
 # In[4]:
+
+
+signal_df
+
+
+# In[ ]:
 
 
 signal_df
@@ -228,6 +234,71 @@ plt.grid(True)
 plt.show()
 
 
+# In[17]:
+
+
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.svm import SVR
+from sklearn.neural_network import MLPRegressor
+import xgboost as xgb
+
+# Example data setup (replace with actual X, y)
+# X = pd.DataFrame(... some data ...)
+# y = pd.Series(... target variable ...)
+
+# Create a function for summary statistics
+def summary_stats(predictions):
+    return {
+        "Mean Return": predictions.mean(),
+        "Volatility": predictions.std(),
+        "Sharpe Ratio": predictions.mean() / predictions.std(),
+    }
+
+# Define your models
+algos = {
+    "LinearRegression": LinearRegression(),
+    "RandomForestRegressor": RandomForestRegressor(),
+    "XGBRegressor": xgb_model,
+    "SVR": SVR(),
+    "MLPRegressor": MLPRegressor()
+}
+
+# Loop through each model to create a graph and print the stats
+for model_name, model in algos.items():
+    # Fit the model
+    model.fit(X, y)
+    
+    # Generate predictions
+    y_pred = pd.Series(model.predict(X), index=X.index)
+    
+    # Plotting
+    plt.figure(figsize=(10, 6))
+    plt.plot(y_pred.index, y_pred.cumsum(), label=f"Predicted - {model_name}")
+    plt.plot(y.index, y.cumsum(), label="Actual", linestyle="--", color='green')
+    plt.title(f"Cumulative Actual vs Predicted: {model_name}")
+    plt.xlabel("Index")
+    plt.ylabel("Cumulative Value")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+    
+    # Print model stats
+    print(f"Model: {model_name}")
+    print(f"  Mean Squared Error: {mean_squared_error(y, y_pred)}")
+    print(f"  Correlation: {y_pred.corr(y)}")
+    stats = summary_stats(y_pred)
+    for stat, value in stats.items():
+        print(f"  {stat}: {value}")
+    print(f"  T-Statistic: {model.score(X, y)}")  # T-Statistic of the model's prediction
+    print(f"  Start Date: {X.index.min()}")
+    print(f"  End Date: {X.index.max()}")
+    print("-" * 50)
+
+
 # # Cumulative Actual vs Predicted Values for All Models
 # 
 # The plot compares cumulative returns between the actual market performance (green dotted line) and the predictions from five machine learning models:
@@ -264,7 +335,7 @@ plt.show()
 # - Simpler models like Linear Regression or SVR can still add value but require careful tuning to compete with ensemble-based approaches.
 # The plot compares cumulative returns between the actual market performance (green dotted line) and the predictions from five machine learning models:
 
-# In[17]:
+# In[18]:
 
 
 feature_importance = xgb_model.feature_importances_
@@ -296,19 +367,19 @@ plt.show()
 # - Mid-importance features may offer opportunities for complementary signal interactions and diversification within composite signals.
 # 
 
-# In[18]:
+# In[19]:
 
 
 #allsignal = openap.dl_all_signals('pandas')
 
 
-# In[19]:
+# In[20]:
 
 
 #allsignal.head()
 
 
-# In[20]:
+# In[21]:
 
 
 top_20_signals = [
@@ -320,49 +391,49 @@ top_20_signals = [
 #allsignal_20 = allsignal[["permno", "yyyymm"] + top_20_signals]
 
 
-# In[21]:
+# In[22]:
 
 
 #allsignal_20 = allsignal_20.dropna(thresh=int(len(top_20_signals)*0.8))
 
 
-# In[22]:
+# In[23]:
 
 
 #allsignal_20.to_csv('allsignal_20.csv.gz', index=False, compression='gzip')
 
 
-# In[23]:
+# In[24]:
 
 
 allsignal_20 = pd.read_csv("allsignal_20.csv.gz", compression = 'gzip')
 
 
-# In[24]:
+# In[25]:
 
 
 allsignal_20.head(10)
 
 
-# In[25]:
+# In[26]:
 
 
 crsp_df = pd.read_csv("crsp_data.csv")
 
 
-# In[26]:
+# In[27]:
 
 
 crsp_df.info()
 
 
-# In[27]:
+# In[28]:
 
 
 crsp_df.head(10)
 
 
-# In[28]:
+# In[29]:
 
 
 crsp_df['date'] = pd.to_datetime(crsp_df['date'])   
@@ -381,7 +452,7 @@ merged_df
 
 # # Survival Analysis - When will a stock dies?
 
-# In[29]:
+# In[30]:
 
 
 import pandas as pd
@@ -416,7 +487,7 @@ cph.fit(survival_df, duration_col='duration', event_col='event')
 cph.print_summary()
 
 
-# In[30]:
+# In[31]:
 
 
 print("Shape:", survival_df.shape)
@@ -426,7 +497,7 @@ print("\nMissing values:")
 print(survival_df.isnull().sum())
 
 
-# In[31]:
+# In[32]:
 
 
 summary_df = cph.summary.reset_index()
@@ -498,7 +569,7 @@ summary_df
 
 # # Signal Decay Analysis
 
-# In[32]:
+# In[33]:
 
 
 import pandas as pd
@@ -556,7 +627,7 @@ top_signals = decay_df.sort_values('IC_avg', ascending=False).head(top_n)['Signa
 decay_df
 
 
-# In[33]:
+# In[34]:
 
 
 plt.figure(figsize=(8, 5))
@@ -619,7 +690,7 @@ plt.show()
 # # Signal Engineering
 # 
 
-# In[34]:
+# In[35]:
 
 
 # --- Signal Engineering Section ---
