@@ -9,8 +9,11 @@ st.title("📊 Stock Return Prediction: Hypothesis-Based Analysis")
 
 # Create tabs per hypothesis
 tabs = st.tabs([
-    "📈 H1: Composite Beats Individual",
-    "📊 H2: Weighted Signals",
-    "⏳ H3: Signal Decay",
-    "🧠 H4: Regime-Aware Models"
+    "Introduction",
+    "Composite Beats Individual?",
+    "Feature Importance",
+    "Survival Analysis - When will a stock die?",
+    "Signal Decay",
+    "Signal Engineering"
+    "Regime-Aware Models"
 ])
