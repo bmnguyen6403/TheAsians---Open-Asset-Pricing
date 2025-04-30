@@ -136,5 +136,5 @@ with main_tabs[2]:
         model_summary_file = "model_summary.csv"  # Adjust path if needed
         model_summary_df = pd.read_csv(model_summary_file)
         st.subheader("📊 Model Summary")
-    st.markdown("Here is the summary of various models' performance metrics.")
-    st.dataframe(model_summary_df)
+        st.markdown("Here is the summary of various models' performance metrics.")
+        st.dataframe(model_summary_df)
