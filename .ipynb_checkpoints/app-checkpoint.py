@@ -275,4 +275,73 @@ The fact that moving averages improved performance suggests that financial signa
 ## Conclusion
 Through this project, I demonstrated that thoughtful signal engineering can materially improve model performance in financial prediction tasks. By combining top raw signals with the best engineered transformations, a hybrid model could achieve better generalization, higher Sharpe ratios, and more stable predictive performance. This highlights the value of both strong signal selection and strategic feature engineering when building systematic investment models
 """)
+    if analysis_tab == "Regime-Aware Models":
+        st.header("📊 Regime-Aware Models")
+        
+        # Create two columns for side-by-side display of images
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.image("dashboard_ref/top22featuredecade.png", caption="Top 22 Feature Decade")
+
+        with col2:
+            st.image("dashboard_ref/spearman.png", caption="Spearman Correlation")
+        st.markdown("""
+        ## 1.  Pipeline Overview
+
+| Stage | What happens | Why it matters |
+|-------|--------------|----------------|
+| **Import & Knobs** | Set the global hyper-parameters (`DROP_THR`, `FLAG_THR`, `SHOW_N`, tree size, sampling cap, regimes). | Keeps the whole experiment reproducible and easy to tweak. |
+| **Date Parsing** | `merged_df["date"] → pd.to_datetime` | Ensures calendar slicing works. |
+| **NaN Scan** | Quick table of *absolute* and *%* missing by column. | Lets us decide what to drop / flag. |
+| **Drop / Flag Logic** | *Drop* cols > 80 % NaN.<br>*Flag* cols 30–80 % by adding a `_nan` dummy. | Prevents super-sparse variables from injecting noise while still letting the model learn that “data missing” can be informative. |
+| **Data Prep** | • Remove dropped columns.<br>• Add missing-flags.<br>• Sort by date. | Produces the final clean training frame. |
+| **Model** | `ExtraTreesRegressor` in a `Pipeline` after a `SimpleImputer(median)`. | - Handles residual NaNs safely.<br>- ExtraTrees is ~2-3× faster than a deep RandomForest, yet exposes `feature_importances_`. |
+| **Regime Loop** | For each decade in `REGIMES`:<br>  1. Slice rows.<br>  2. (Optionally) down-sample to `MAX_ROWS`.<br>  3. Fit the pipeline.<br>  4. Store feature importances & in-sample R². | Gives a comparable importance vector for every calendar regime. |
+| **Visuals** | *Stacked bar* of relative importance for the **top-_k_** features (where _k ≤ SHOW_N_).<br>*Spearman heat-map* of feature-rank correlations across regimes. | Shows *how* and *whether* factor relevance shifts over time; the heat-map quantifies stability. |
+
+---
+
+## 2.  Why the code chooses these defaults
+
+* **80 % cut-off**: a column with four-fifths NaNs can’t contribute reliable signal; better to drop it than impute noise.  
+* **30–80 % flagged**: missingness itself can encode information (e.g., young IPOs lack long trend history).  
+* **`MAX_ROWS = 10 000`**: keeps each fit < a few seconds on a laptop; raise once you prove it runs.  
+* **Shallow ExtraTrees (`max_depth = 8`, `n_estimators = 120`)**: lightweight “smoke-test” that still captures nonlinearities.  
+* **One CPU core (`n_jobs = 1`)**: avoids joblib RAM spikes; set to 4-8 if you have plenty of memory.
+
+---
+
+## 3.  Reading the outputs
+
+### 3.1 Stacked-Bar Plot → Relative Importance by Decade
+* **Each bar sums to 1** → you can compare colours horizontally.  
+* **Wider slice over time** = factor is becoming more influential.  
+* **Narrowing slice** = factor’s pricing power is fading.  
+
+### 3.2 Spearman Heat-Map → Stability of Feature Ranking
+* **Diagonal = 1** (same decade vs itself).  
+* **Off-diagonal ≥ 0.85** → ordering is largely stable (evolution, not regime break).  
+* **Off-diagonal ≤ 0.6** would flag a structural shift.
+
+### 3.3 In-Sample R² Print-out
+| Decade | R² (in-sample) |
+|--------|----------------|
+| 1990s  | ≈ 0.04 |
+| 2000s–2020s | ≈ 0.09 |
+
+*Even leading academic factor models seldom exceed 10 % cross-sectional R² at the one-month horizon, so these numbers are realistic.*
+
+---
+
+## 4.  Key Findings from the Example Run
+
+1. **`retConglomerate`** dominated in the 1990s but steadily shrank thereafter → the classic “conglomerate discount” weakened post-dot-com.  
+2. **Trend/momentum signals (`TrendFactor`, flag)** rose in the 2010s/2020s → investors rewarded price-trend information more in the low-rate era.  
+3. **`betaVIX`** remained a stable mid-sized slice every decade → volatility risk carries a persistent premium.  
+4. **High rank-correlations (0.85–0.92)** indicate no hard regime break; factor importance drifts smoothly.  
+5. **R² doubles after the 1990s then plateaus** → either the factor set improved or markets became more predictable post-GFC, but further gains are limited without richer data.
+
+---
+""")
 
