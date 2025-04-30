@@ -812,7 +812,7 @@ merged_df2 = merged_df2.dropna(subset=["ret"])
 
 
 
-# In[ ]:
+# In[40]:
 
 
 engineered_features = [col for col in allsignal_20_new.columns if any(keyword in col for keyword in ['_', 'MA3', 'MA6'])]
@@ -825,15 +825,10 @@ importance_eng = pd.Series(rf.feature_importances_, index=X_eng.columns).sort_va
 
 print("Top Engineered Features by Importance:")
 print(importance_eng.head(10))
+importance_eng.head(10).to_csv('importance_eng.csv', index = True)
 
 
-# In[ ]:
-
-
-importance_eng.head(10).to_csv("importance_eng.csv", index = False)
-
-
-# In[ ]:
+# In[42]:
 
 
 # Use your clean top 20 signals directly
@@ -862,7 +857,7 @@ print("Top 10 Original Features by Importance:")
 print(importance_df_orig)
 
 
-# In[ ]:
+# In[43]:
 
 
 importance_df_orig.to_csv("orig_importance.csv", index = False)
@@ -909,7 +904,7 @@ importance_df_orig.to_csv("orig_importance.csv", index = False)
 
 # # Regime Detection
 
-# In[ ]:
+# In[44]:
 
 
 import pandas as pd
