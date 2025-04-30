@@ -1,39 +1,29 @@
-# app.py
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+import shap
+from lifelines import CoxPHFitter
+from best_model_10_random_good.ipnyb import (
+    signal_df,
+    composite_df,
+    model_performance_df,
+    feature_importance_df,
+    survival_df,
+    decay_df,
+    regime_df,
+)
 
-# Basic page setup
-st.set_page_config(page_title="Stock Return Predictor", layout="wide")
-st.title("📈 Stock Return Prediction Dashboard")
 
-# Sidebar
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Upload Data", "Explore", "Model Output"])
 
-# Upload Tab
-if page == "Upload Data":
-    st.header("📤 Upload Your Data")
-    uploaded_file = st.file_uploader("Upload a CSV file with financial signals", type="csv")
-    if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
-        st.success("File uploaded successfully!")
-        st.write(df.head())
-        st.session_state["uploaded_df"] = df
+st.set_page_config(page_title="Stock Return Prediction Dashboard", layout="wide")
+st.title("📊 Stock Return Prediction Full Dashboard")
 
-# Explore Tab
-elif page == "Explore":
-    st.header("🔍 Data Exploration")
-    if "uploaded_df" in st.session_state:
-        df = st.session_state["uploaded_df"]
-        st.write("Quick summary:")
-        st.dataframe(df.describe())
-        st.line_chart(df.select_dtypes(include='number'))
-    else:
-        st.warning("Please upload a dataset first in the 'Upload Data' tab.")
+# Create Tabs
+tabs = st.tabs([
+    "Signal Selection", "Composite Signal", "Model Performance",
+    "Feature Importance", "Survival Analysis", "Signal Decay",
+    "Signal Engineering", "Regime Detection"
+])
 
-# Model Output Tab
-elif page == "Model Output":
-    st.header("🤖 Model Insights")
-    st.write("This section will display model predictions, survival analysis, and more.")
-    st.info("Model results and charts will go here once implemented.")
+st.sidebar.info("Built by The Asians Team | FIN 377 Project")
