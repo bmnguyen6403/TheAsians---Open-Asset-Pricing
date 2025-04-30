@@ -50,16 +50,16 @@ signal_df = openap.dl_signal_doc('pandas')
 signal_df
 
 
-# In[ ]:
+# In[5]:
 
 
-signal_df
+signal_df.head(10).to_csv("signaldoc_head10.csv", index = False)
 
 
 # ## Sampling out 10 random, with quality good, and T-stat > 3 (statistical significance)
 # 
 
-# In[5]:
+# In[6]:
 
 
 signal_df['T-Stat'] = pd.to_numeric(signal_df['T-Stat'], errors='coerce')
@@ -76,40 +76,40 @@ filtered_signals_reset[['Acronym', 'Signal Rep Quality', 'Return', 'T-Stat']]
 
 
 
-# In[6]:
+# In[7]:
 
 
 signals = filtered_signals_reset['Acronym'].tolist() 
 
 
-# In[7]:
+# In[8]:
 
 
 port_vw = openap.dl_port('deciles_vw', 'pandas', signals)
 ls_df = port_vw[port_vw['port'] == 'LS']
 
 
-# In[8]:
+# In[9]:
 
 
 ls_df
 
 
-# In[9]:
+# In[10]:
 
 
 ls_matrix = ls_df.pivot(index='date', columns='signalname', values='ret')
 ls_matrix
 
 
-# In[10]:
+# In[11]:
 
 
 ls_zscore = (ls_matrix - ls_matrix.mean()) / ls_matrix.std()
 ls_zscore.dropna()
 
 
-# In[11]:
+# In[12]:
 
 
 weights = filtered_signals_reset.set_index('Acronym')['T-Stat']
@@ -119,7 +119,7 @@ composite_signal = ls_zscore.dot(weights_normalized)
 #composite_signal = composite_signal.dropna()
 
 
-# In[12]:
+# In[13]:
 
 
 actual_ls_return = ls_matrix.mean(axis=1)
@@ -129,7 +129,7 @@ aligned.columns = ['predicted', 'actual']
 print(aligned.corr())
 
 
-# In[13]:
+# In[14]:
 
 
 algos = [linear_r, rf, xgb_model, svr, MLP]
@@ -139,7 +139,7 @@ y = ls_matrix.mean(axis=1).loc[X.index]
 print(X.isna().sum())
 
 
-# In[14]:
+# In[15]:
 
 
 def summary_stats(series):
@@ -159,7 +159,7 @@ def summary_stats(series):
 summary_stats(composite_signal)
 
 
-# In[15]:
+# In[16]:
 
 
 composite_cumulative_return = composite_signal.cumsum()
@@ -204,7 +204,7 @@ print(f"Mean Squared Error: {mse}")
 # - Reassessing the survival-based signals and analyzing signal decay across time horizons may help strengthen the predictive power and stability of the composite signal.
 # 
 
-# In[16]:
+# In[17]:
 
 
 plt.figure(figsize=(10, 6))
@@ -234,7 +234,7 @@ plt.grid(True)
 plt.show()
 
 
-# In[17]:
+# In[18]:
 
 
 import matplotlib.pyplot as plt
@@ -262,12 +262,12 @@ def summary_stats(predictions):
 algos = {
     "LinearRegression": LinearRegression(),
     "RandomForestRegressor": RandomForestRegressor(),
-    "XGBRegressor": xgb_model,
+    "XGBRegressor": xgb_model(),  # Make sure you initialize it correctly
     "SVR": SVR(),
     "MLPRegressor": MLPRegressor()
 }
 
-# Loop through each model to create a graph and print the stats
+# Loop through each model to create a graph, print the stats, and save the figure
 for model_name, model in algos.items():
     # Fit the model
     model.fit(X, y)
@@ -284,8 +284,11 @@ for model_name, model in algos.items():
     plt.ylabel("Cumulative Value")
     plt.legend()
     plt.grid(True)
-    plt.show()
     
+    # Save the figure
+    plt.savefig(f"{model_name}_cumulative_return.png")
+    plt.close()  # Close the plot to avoid overlap
+
     # Print model stats
     print(f"Model: {model_name}")
     print(f"  Mean Squared Error: {mean_squared_error(y, y_pred)}")
@@ -335,7 +338,7 @@ for model_name, model in algos.items():
 # - Simpler models like Linear Regression or SVR can still add value but require careful tuning to compete with ensemble-based approaches.
 # The plot compares cumulative returns between the actual market performance (green dotted line) and the predictions from five machine learning models:
 
-# In[18]:
+# In[19]:
 
 
 feature_importance = xgb_model.feature_importances_
@@ -367,19 +370,19 @@ plt.show()
 # - Mid-importance features may offer opportunities for complementary signal interactions and diversification within composite signals.
 # 
 
-# In[19]:
+# In[20]:
 
 
 #allsignal = openap.dl_all_signals('pandas')
 
 
-# In[20]:
+# In[21]:
 
 
 #allsignal.head()
 
 
-# In[21]:
+# In[22]:
 
 
 top_20_signals = [
@@ -391,49 +394,49 @@ top_20_signals = [
 #allsignal_20 = allsignal[["permno", "yyyymm"] + top_20_signals]
 
 
-# In[22]:
+# In[23]:
 
 
 #allsignal_20 = allsignal_20.dropna(thresh=int(len(top_20_signals)*0.8))
 
 
-# In[23]:
+# In[24]:
 
 
 #allsignal_20.to_csv('allsignal_20.csv.gz', index=False, compression='gzip')
 
 
-# In[24]:
+# In[25]:
 
 
 allsignal_20 = pd.read_csv("allsignal_20.csv.gz", compression = 'gzip')
 
 
-# In[25]:
+# In[26]:
 
 
 allsignal_20.head(10)
 
 
-# In[26]:
+# In[27]:
 
 
 crsp_df = pd.read_csv("crsp_data.csv")
 
 
-# In[27]:
+# In[28]:
 
 
 crsp_df.info()
 
 
-# In[28]:
+# In[29]:
 
 
 crsp_df.head(10)
 
 
-# In[29]:
+# In[30]:
 
 
 crsp_df['date'] = pd.to_datetime(crsp_df['date'])   
@@ -450,9 +453,15 @@ merged_df = merged_df.dropna(subset=["ret"])
 merged_df
 
 
+# In[31]:
+
+
+merged_df.head(10).to_csv("merged_df_head10.csv", index = False)
+
+
 # # Survival Analysis - When will a stock dies?
 
-# In[30]:
+# In[32]:
 
 
 import pandas as pd
@@ -487,7 +496,7 @@ cph.fit(survival_df, duration_col='duration', event_col='event')
 cph.print_summary()
 
 
-# In[31]:
+# In[33]:
 
 
 print("Shape:", survival_df.shape)
@@ -497,7 +506,7 @@ print("\nMissing values:")
 print(survival_df.isnull().sum())
 
 
-# In[32]:
+# In[34]:
 
 
 summary_df = cph.summary.reset_index()
@@ -569,7 +578,7 @@ summary_df
 
 # # Signal Decay Analysis
 
-# In[33]:
+# In[35]:
 
 
 import pandas as pd
@@ -627,7 +636,7 @@ top_signals = decay_df.sort_values('IC_avg', ascending=False).head(top_n)['Signa
 decay_df
 
 
-# In[34]:
+# In[36]:
 
 
 plt.figure(figsize=(8, 5))
@@ -690,7 +699,7 @@ plt.show()
 # # Signal Engineering
 # 
 
-# In[35]:
+# In[37]:
 
 
 # --- Signal Engineering Section ---
@@ -722,7 +731,7 @@ merged_df2 = merged_df2.dropna(subset=["ret"])
 
 
 
-# In[ ]:
+# In[38]:
 
 
 engineered_features = [col for col in allsignal_20_new.columns if any(keyword in col for keyword in ['_', 'MA3', 'MA6'])]
@@ -737,7 +746,7 @@ print("Top Engineered Features by Importance:")
 print(importance_eng.head(10))
 
 
-# In[ ]:
+# In[39]:
 
 
 # Use your clean top 20 signals directly
@@ -807,7 +816,7 @@ print(importance_df_orig)
 
 # # Regime Detection
 
-# In[ ]:
+# In[40]:
 
 
 import pandas as pd
@@ -827,7 +836,7 @@ print("\nTop 10 columns by % missing:")
 display(nan_table.head(10))
 
 
-# In[ ]:
+# In[41]:
 
 
 import pandas as pd, numpy as np, gc, seaborn as sns, matplotlib.pyplot as plt
@@ -998,7 +1007,7 @@ print("\nIn-sample R² by regime:", r2_scores)
 # 
 # 
 
-# In[ ]:
+# In[42]:
 
 
 get_ipython().system('jupyter nbconvert --to script best_model_10_random_good.ipynb')
