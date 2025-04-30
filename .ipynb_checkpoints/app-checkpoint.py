@@ -132,3 +132,9 @@ with main_tabs[2]:
             **Summary**:  
             The **XGBoost Regressor** performs well overall, tracking the actual returns more accurately, especially during volatile periods. It shows superior predictive power compared to other models, such as **Linear Regression** and **SVR**, making it a stronger choice for financial modeling. However, the model might still struggle with predicting extreme market shifts, like the sudden crash in 2008. Despite this, **XGBoost** is a top performer in terms of predictive accuracy and handling complex market conditions.
             """)
+# Load and display the "model_summary.csv" table
+        model_summary_file = "model_summary.csv"  # Adjust path if needed
+        model_summary_df = pd.read_csv(model_summary_file)
+        st.subheader("📊 Model Summary")
+        st.markdown("Here is the summary of various models' performance metrics.")
+        st.dataframe(model_summary_df)
