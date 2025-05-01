@@ -97,6 +97,14 @@ with main_tabs[2]:
         with model_tabs[0]:
             st.image("dashboard_ref/composite_signal.png", caption="Composite Signal", use_container_width=True)
             st.markdown("""
+            **Composite Signal Explanation**
+
+The composite signal is constructed by aggregating multiple individual signals based on their standardized returns. First, the returns of each signal are normalized using their Z-scores, which helps bring them to a comparable scale by subtracting the mean and dividing by the standard deviation. This ensures that all signals contribute equally, regardless of their original scale or volatility. After normalization, each signal is weighted according to its T-statistic, which is a measure of statistical significance. The T-statistic reflects how strongly each signal correlates with the target variable, and signals with higher T-statistics are given more weight in the final composite.
+
+The weighted signals are then aggregated using a dot product, where the normalized returns are multiplied by their respective weights, and the results are summed. The final composite signal represents a combination of the selected signals, with more importance placed on those that are statistically significant. This approach enhances the predictive power of the signal by considering the most relevant and robust financial indicators, providing a more stable and reliable signal for modeling or further analysis.\n
+
+            """)
+            st.markdown("""
             **Summary**:  
             **Composite Signal** significantly underperforms compared to the **Actual Market** returns, as indicated by the gap between the predicted (blue line) and actual (green dashed line) values. The **Composite Signal** lags the market, especially during periods of sharp growth, suggesting that the model might be missing critical market trends. The actual returns, particularly after 2010, surpass the predictions made by the composite signal. This performance discrepancy highlights that additional features, adjustments, or improvements in model complexity are necessary to better capture market dynamics and improve predictive accuracy.\n
             The **low correlation** suggests that the model is not capturing the market's behavior accurately, and the **Sharpe Ratio** indicates that while the model has positive returns, they are not well-adjusted for risk. Further tuning and potentially the introduction of more relevant features could improve the model's performance.
@@ -251,7 +259,33 @@ A hazard ratio (**exp(coef)**) greater than 1 suggests the signal increases the 
 - **betaVIX (exp(coef) = 0.0283):**
   - **Meaning**: Measures the firm’s sensitivity to changes in the VIX (Volatility Index), which reflects market volatility.
   - **Effect**: A hazard ratio much less than 1 suggests that **firms with low sensitivity to volatility** are less likely to face financial distress. This indicates that less volatile companies tend to have **lower risk** of delisting.
+        """)
+        
+    if analysis_tab == "Signal Decay":
+        st.header("📊 Signal Decay")
+        st.image("dashboard_ref/decay_graph.png")
+        st.markdown("""
+## Graph Overview
+The graph illustrates the signal decay patterns for the top five financial signals, evaluated based on their Spearman Rank Correlation (IC) with future stock returns over 1-month, 3-month, and 6-month horizons.
 
+## Key Observations
+
+| Signal | Behavior | Interpretation |
+|:--------|:---------|:----------------|
+| **XFIN** | IC **increases** over time | Indicates that external financing activity becomes **more predictive** over longer holding periods. |
+| **TrendFactor** | IC **decreases moderately** | Maintains reasonable predictive power across 6 months, suitable for **medium-term strategies**. |
+| **NetEquityFinance** | IC **declines steadily** | Predictive strength fades over time; better for **short-term stock selection**. |
+| **roaq** | IC **declines sharply** | Very strong short-term predictor, but effectiveness **diminishes rapidly** after 1 month. |
+| **retConglomerate** | IC **consistently weakens** | Shows the lowest predictive power overall, with a steady decay over time. |
+
+## Overall Conclusions
+- **XFIN** is the most promising for **long-term investment horizons**.
+- **roaq** offers strong opportunities for **short-term trading**.
+- **TrendFactor** is relatively stable, supporting **medium-term portfolio construction**.
+- **NetEquityFinance** and **retConglomerate** show weaker and diminishing predictive abilities, and may require combination with other signals for effective use.
+
+## Practical Implications
+Understanding signal decay helps align trading strategies with the appropriate investment horizon. Combining fast-decaying signals (like **roaq**) with slower-decaying signals (like **XFIN**) could enhance portfolio stability and performance across different timeframes.
         """)
         
     if analysis_tab == "Signal Engineering":
@@ -344,4 +378,3 @@ Through this project, I demonstrated that thoughtful signal engineering can mate
 
 ---
 """)
-
