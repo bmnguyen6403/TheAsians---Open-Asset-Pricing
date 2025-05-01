@@ -176,7 +176,7 @@ with main_tabs[2]:
         st.markdown("""
 ## Signal Analysis Summary
 
-The following analysis presents the results from a Cox Proportional Hazards model. We categorize signals based on whether their hazard ratios (**exp(coef)**) are greater than or less than 1, indicating whether they are associated with increased hazard (higher risk) or positive survival (growth). **p-values** less than 0.1 indicate signals with statistically significant associations.
+The following analysis presents the results from a **Cox Proportional Hazards** model. We categorize signals based on whether their hazard ratios (**exp(coef)**) are greater than or less than 1, indicating whether they are associated with increased hazard (higher risk) or positive survival (growth). **p-values** less than 0.1 indicate signals with statistically significant associations.
 
 A hazard ratio (**exp(coef)**) greater than 1 suggests the signal increases the risk of being delisted (higher "death risk"), while a hazard ratio less than 1 suggests it reduces the risk ("still alive").
 
@@ -194,14 +194,37 @@ A hazard ratio (**exp(coef)**) greater than 1 suggests the signal increases the 
 | DelLTI                | 1.2929  | 3.6434    | 0.0241  |
 
 **Analysis:**
-- These signals have hazard ratios greater than 1, indicating a directional association with increased risk.
-- **MomOffSeason06YrPlus** (exp(coef) = 30.8578) suggests that firms with high returns in off-season months may face higher risk.
-- **roaq** (exp(coef) = 9.8905) suggests that higher return on assets (ROA) may indicate a higher risk of delisting.
-- **DelDRC** (exp(coef) = 12.7550) indicates a significant association with higher risk from deferred revenue.
-- **CustomerMomentum** (exp(coef) = 1.5705) suggests that companies with stronger customer momentum face higher risk, although it is borderline statistically significant.
-- **IntanEP** (exp(coef) = 1.5178) implies a possible higher risk for firms with higher intangible asset-based earnings.
-- **DelLTI** (exp(coef) = 3.6434) suggests that differences in long-term investments and advances could increase risk.
-- These signals, while showing higher risk, need further investigation through feature engineering.
+- **TotalAccruals (exp(coef) = 1.3582):**
+  - **Meaning**: Accruals are accounting adjustments made for items that are earned or owed but not yet received or paid. A high accrual could indicate that a firm is managing its earnings aggressively.
+  - **Effect**: A hazard ratio greater than 1 means that **higher accruals** are associated with an increased risk of being delisted or facing financial distress.
+
+- **grcapx (exp(coef) = 1.0326):**
+  - **Meaning**: Growth rate of capital expenditures (capx) relative to some benchmark, typically to measure how much a firm is investing in its operations.
+  - **Effect**: A hazard ratio greater than 1 implies that **higher growth in capital expenditures** may increase the risk of delisting or financial failure. High investments may reflect high risk, especially if not yielding immediate returns.
+
+- **MomOffSeason06YrPlus (exp(coef) = 30.8578):**
+  - **Meaning**: Measures the average return in the off-season months over a long period (more than 6 years). This might capture how stocks perform in less active periods.
+  - **Effect**: A high hazard ratio suggests that firms with good returns during off-seasons may have a **higher risk** of being delisted, possibly indicating volatility or market timing issues.
+
+- **roaq (exp(coef) = 9.8905):**
+  - **Meaning**: Return on assets (ROA) is a measure of how profitable a company is relative to its total assets.
+  - **Effect**: A hazard ratio greater than 1 indicates that **higher return on assets** could be associated with a higher risk of delisting. This may seem counterintuitive, but firms with high ROA may be operating in high-risk sectors or aggressive growth modes.
+
+- **DelDRC (exp(coef) = 12.7550):**
+  - **Meaning**: Annual change in deferred revenue (drc) scaled by some factor. Deferred revenue is money a company has received for services it has not yet performed.
+  - **Effect**: A hazard ratio greater than 1 indicates that **increased deferred revenue** could indicate higher financial risk or instability.
+
+- **CustomerMomentum (exp(coef) = 1.5705):**
+  - **Meaning**: Measures the strength of customer momentum (the firm’s ability to retain and expand its customer base).
+  - **Effect**: Despite its statistical significance, a hazard ratio greater than 1 suggests that **strong customer momentum** might correlate with increased risk of failure, possibly due to unsustainable growth or changing market conditions.
+
+- **IntanEP (exp(coef) = 1.5178):**
+  - **Meaning**: The model uses earnings per share (EPS) adjusted for intangible assets to account for a firm's value from non-physical assets like patents and brand value.
+  - **Effect**: A hazard ratio greater than 1 implies that firms with high intangible assets could be more **vulnerable to financial distress**. This might reflect reliance on non-tangible factors, which can be volatile.
+
+- **DelLTI (exp(coef) = 3.6434):**
+  - **Meaning**: Represents the difference in investment and advances (ivao) between periods.
+  - **Effect**: A hazard ratio greater than 1 indicates that **higher differences in long-term investments** (such as shifts in how firms allocate their capital) can be linked to greater financial risk or potential failure.
 
 ### Signals Associated with Reduced Hazard (Positive Growth)
 
@@ -213,39 +236,22 @@ A hazard ratio (**exp(coef)**) greater than 1 suggests the signal increases the 
 | betaVIX             | -3.5647 | 0.0283    | 0.1155  |
 
 **Analysis:**
-- These signals have hazard ratios less than 1, suggesting a protective or growth-enhancing effect.
-- **TrendFactor** (exp(coef) = 0.8151) suggests that firms aligned with favorable financial trends may experience reduced risk of being delisted.
-- **InvGrowth** (exp(coef) = 0.9556) indicates that firms with lower investment growth may have a reduced risk of delisting.
-- **retConglomerate** (exp(coef) = 0.3139) suggests that conglomerate firms may have a significantly reduced risk of delisting.
-- **betaVIX** (exp(coef) = 0.0283) implies that stocks less sensitive to market volatility (VIX) exhibit a protective effect and lower risk.
-- These signals, while showing lower risk, still require further statistical validation for stronger significance.
-        """)
-        
-    if analysis_tab == "Signal Decay":
-        st.header("📊 Signal Decay")
-        st.image("dashboard_ref/decay_graph.png")
-        st.markdown("""
-## Graph Overview
-The graph illustrates the signal decay patterns for the top five financial signals, evaluated based on their Spearman Rank Correlation (IC) with future stock returns over 1-month, 3-month, and 6-month horizons.
+- **TrendFactor (exp(coef) = 0.8151):**
+  - **Meaning**: Represents a factor that aligns a firm’s performance with overall market trends. Firms aligned with positive trends often outperform others.
+  - **Effect**: A hazard ratio less than 1 suggests that **firms aligned with positive trends** may have a **lower risk** of delisting. It may indicate growth opportunities, though the p-value is borderline significant.
 
-## Key Observations
+- **InvGrowth (exp(coef) = 0.9556):**
+  - **Meaning**: Investment growth over time, typically adjusted for inflation or other factors. It can represent how a firm is investing to expand its business.
+  - **Effect**: A hazard ratio less than 1 means that **lower investment growth** may reduce the risk of delisting, suggesting that **firms with controlled or modest investments** are less likely to face financial issues.
 
-| Signal | Behavior | Interpretation |
-|:--------|:---------|:----------------|
-| **XFIN** | IC **increases** over time | Indicates that external financing activity becomes **more predictive** over longer holding periods. |
-| **TrendFactor** | IC **decreases moderately** | Maintains reasonable predictive power across 6 months, suitable for **medium-term strategies**. |
-| **NetEquityFinance** | IC **declines steadily** | Predictive strength fades over time; better for **short-term stock selection**. |
-| **roaq** | IC **declines sharply** | Very strong short-term predictor, but effectiveness **diminishes rapidly** after 1 month. |
-| **retConglomerate** | IC **consistently weakens** | Shows the lowest predictive power overall, with a steady decay over time. |
+- **retConglomerate (exp(coef) = 0.3139):**
+  - **Meaning**: Identifies conglomerate firms (those with diverse business units across sectors) and their relative financial stability.
+  - **Effect**: A hazard ratio significantly less than 1 implies that **conglomerate firms** are less likely to be delisted, possibly due to their diversified nature, which provides stability and reduces risk.
 
-## Overall Conclusions
-- **XFIN** is the most promising for **long-term investment horizons**.
-- **roaq** offers strong opportunities for **short-term trading**.
-- **TrendFactor** is relatively stable, supporting **medium-term portfolio construction**.
-- **NetEquityFinance** and **retConglomerate** show weaker and diminishing predictive abilities, and may require combination with other signals for effective use.
+- **betaVIX (exp(coef) = 0.0283):**
+  - **Meaning**: Measures the firm’s sensitivity to changes in the VIX (Volatility Index), which reflects market volatility.
+  - **Effect**: A hazard ratio much less than 1 suggests that **firms with low sensitivity to volatility** are less likely to face financial distress. This indicates that less volatile companies tend to have **lower risk** of delisting.
 
-## Practical Implications
-Understanding signal decay helps align trading strategies with the appropriate investment horizon. Combining fast-decaying signals (like **roaq**) with slower-decaying signals (like **XFIN**) could enhance portfolio stability and performance across different timeframes.
         """)
         
     if analysis_tab == "Signal Engineering":
