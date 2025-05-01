@@ -174,52 +174,51 @@ with main_tabs[2]:
         st.header("📊 Survival Analysis")
         st.dataframe(surv_analysis_df)
         st.markdown("""
-The following analysis presents the results from a Cox Proportional Hazards model. We categorize signals based on whether their hazard ratios (**exp(coef)**) are greater than or less than 1, indicating whether they are associated with increased hazard (higher risk) or positive survival (growth). **p-values** greater than 0.05 indicate statistical significance.
+## Signal Analysis Summary
+
+The following analysis presents the results from a Cox Proportional Hazards model. We categorize signals based on whether their hazard ratios (**exp(coef)**) are greater than or less than 1, indicating whether they are associated with increased hazard (higher risk) or positive survival (growth). **p-values** less than 0.1 indicate signals with statistically significant associations.
 
 A hazard ratio (**exp(coef)**) greater than 1 suggests the signal increases the risk of being delisted (higher "death risk"), while a hazard ratio less than 1 suggests it reduces the risk ("still alive").
 
 ### Signals Associated with Increased Hazard (Higher Risk)
 
-| Acronym | coef | exp(coef) | p-value |
-|:--------|-----:|----------:|--------:|
-| NetEquityFinance | 0.6431 | 1.9023 | 0.5094 |
-| TotalAccruals | 0.3062 | 1.3582 | 0.0726 |
-| grcapx | 0.0321 | 1.0326 | 0.0770 |
-| NetDebtFinance | 1.0352 | 2.8158 | 0.2352 |
-| InvestPPEInv | 0.4018 | 1.4945 | 0.1162 |
+| Acronym               | coef    | exp(coef) | p-value |
+|:----------------------|--------:|----------:|--------:|
+| TotalAccruals         | 0.3062  | 1.3582    | 0.0726  |
+| grcapx                | 0.0321  | 1.0326    | 0.0770  |
+| MomOffSeason06YrPlus  | 3.4294  | 30.8578   | 0.0058  |
+| roaq                  | 2.2916  | 9.8905    | 0.0004  |
+| DelDRC                | 2.5459  | 12.7550   | 0.0053  |
+| CustomerMomentum      | 0.4514  | 1.5705    | 0.0495  |
+| IntanEP               | 0.4173  | 1.5178    | 5.8193e-08 |
+| DelLTI                | 1.2929  | 3.6434    | 0.0241  |
 
 **Analysis:**
 - These signals have hazard ratios greater than 1, indicating a directional association with increased risk.
-- However, all of them have p-values above 0.05, meaning their association with hazard is statistically weak.
-- **Notable Signals:**
-  - **NetEquityFinance** shows a relatively high hazard ratio (1.9023), suggesting firms with more equity financing activity could face higher risk, although the weak p-value suggests this should be interpreted cautiously.
-  - **NetDebtFinance** has an even larger hazard ratio (2.8158), indicating a possible increased risk from debt financing behaviors, albeit without statistical confirmation.
-- Despite being less reliable individually, these signals might still provide valuable information when combined or interacted with other signals through feature engineering.
+- **MomOffSeason06YrPlus** (exp(coef) = 30.8578) suggests that firms with high returns in off-season months may face higher risk.
+- **roaq** (exp(coef) = 9.8905) suggests that higher return on assets (ROA) may indicate a higher risk of delisting.
+- **DelDRC** (exp(coef) = 12.7550) indicates a significant association with higher risk from deferred revenue.
+- **CustomerMomentum** (exp(coef) = 1.5705) suggests that companies with stronger customer momentum face higher risk, although it is borderline statistically significant.
+- **IntanEP** (exp(coef) = 1.5178) implies a possible higher risk for firms with higher intangible asset-based earnings.
+- **DelLTI** (exp(coef) = 3.6434) suggests that differences in long-term investments and advances could increase risk.
+- These signals, while showing higher risk, need further investigation through feature engineering.
 
 ### Signals Associated with Reduced Hazard (Positive Growth)
 
-| Acronym | coef | exp(coef) | p-value |
-|:--------|-----:|----------:|--------:|
-| XFIN | -1.3061 | 0.2709 | 0.2035 |
-| TrendFactor | -0.2044 | 0.8151 | 0.0658 |
-| RDS | -0.000016 | 0.999984 | 0.2238 |
-| hire | -0.1547 | 0.8567 | 0.2147 |
-| MomSeason16YrPlus | -0.2352 | 0.7904 | 0.2950 |
-| IndMom | -0.0091 | 0.9910 | 0.9415 |
-| betaVIX | -3.5647 | 0.0283 | 0.1155 |
+| Acronym             | coef    | exp(coef) | p-value |
+|:--------------------|--------:|----------:|--------:|
+| TrendFactor         | -0.2044 | 0.8151    | 0.0658  |
+| InvGrowth           | -0.0454 | 0.9556    | 5.0839e-05 |
+| retConglomerate     | -1.1588 | 0.3139    | 2.9556e-06 |
+| betaVIX             | -3.5647 | 0.0283    | 0.1155  |
 
 **Analysis:**
 - These signals have hazard ratios less than 1, suggesting a protective or growth-enhancing effect.
-- Although their p-values are not statistically strong, their directional indication toward positive survival could be explored further.
-- **Notable Signals:**
-  - **XFIN** (exp(coef) = 0.2709) indicates a potentially strong protective effect from external financing net flows, although not statistically significant.
-  - **TrendFactor** suggests firms aligned with trending financial factors may experience modest survival advantages.
-  - **betaVIX** (exp(coef) = 0.0283) implies an extreme protective effect for stocks less sensitive to market volatility (VIX), highlighting a potential defensive property worth future investigation.
-- These signals could contribute to a composite low-risk score if properly validated or transformed in future modeling.
-
-### Implications for Modeling
-
-Signals showing weaker individual significance could still be useful in aggregated models or after applying feature engineering. By combining both risk-enhancing and protective signals, we can design more nuanced models that better account for multiple dimensions of survival dynamics.
+- **TrendFactor** (exp(coef) = 0.8151) suggests that firms aligned with favorable financial trends may experience reduced risk of being delisted.
+- **InvGrowth** (exp(coef) = 0.9556) indicates that firms with lower investment growth may have a reduced risk of delisting.
+- **retConglomerate** (exp(coef) = 0.3139) suggests that conglomerate firms may have a significantly reduced risk of delisting.
+- **betaVIX** (exp(coef) = 0.0283) implies that stocks less sensitive to market volatility (VIX) exhibit a protective effect and lower risk.
+- These signals, while showing lower risk, still require further statistical validation for stronger significance.
         """)
         
     if analysis_tab == "Signal Decay":
@@ -279,15 +278,8 @@ Through this project, I demonstrated that thoughtful signal engineering can mate
 """)
     if analysis_tab == "Regime-Aware Models":
         st.header("📊 Regime-Aware Models")
-        
-        # Create two columns for side-by-side display of images
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.image("dashboard_ref/top22featuredecade.png", caption="Top 22 Feature Decade")
-
-        with col2:
-            st.image("dashboard_ref/spearman.png", caption="Spearman Correlation")
+        st.image("dashboard_ref/top22featuredecade.png", caption="Top 22 Feature Decade")
+        st.image("dashboard_ref/spearman.png", caption="Spearman Correlation")
         st.markdown("""
         ## 1.  Pipeline Overview
 
