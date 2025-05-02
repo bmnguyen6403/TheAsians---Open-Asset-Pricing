@@ -9,3 +9,4 @@ pyportfolioopt==1.5.2
 yfinance
 plotly
 scikit-learn
+matplotlib.pyplot
