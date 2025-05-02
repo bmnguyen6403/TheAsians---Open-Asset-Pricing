@@ -170,7 +170,7 @@ The weighted signals are then aggregated using a dot product, where the normaliz
             st.image("dashboard_ref/XGBRegressor_cumulative_return.png", caption="XGBoost Regressor", use_container_width=True)
             st.markdown("""
             **Summary**:  
-            The **XGBoost Regressor** performs well overall, tracking the **Actual Returns** more accurately than most other models, especially during volatile periods. It provides superior predictive power, handling complex market conditions effectively. While it performs well overall, the model may still face challenges in predicting sudden market shifts, like the sharp crash in 2008. Nevertheless, **XGBoost** is a top performer in terms of predictive accuracy and managing market dynamics, making it one of the most reliable models for stock return prediction.\n
+            The **XGBoost Regressor** performs well overall, tracking the **Actual Returns** more accurately than most other models, especially during volatile periods. It provides superior predictive power, handling complex market conditions effectively. **XGBoost** is a top performer in terms of predictive accuracy and managing market dynamics, making it one of the most reliable models for stock return prediction.\n
             The **correlation** demonstrates a perfect fit to the market returns, making **XGBoost** one of the strongest models for stock prediction. However, the **Sharpe Ratio** suggests that the model's returns could be more adjusted for risk, and additional tuning may improve its performance during extreme market conditions.
             """)
         
