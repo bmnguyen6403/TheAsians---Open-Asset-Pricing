@@ -34,6 +34,28 @@ with main_tabs[0]:
     - **H4**: Regime-aware models outperform static models.
     """)
 
+    # Adding team member images and names
+    st.markdown("### Meet the Team")
+    
+    # Creating columns for images and names of the team members
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.image("path_to_image/Minh_Nguyen.jpg", width=100)  # Adjust image path accordingly
+        st.markdown("**Minh Nguyen**")
+
+    with col2:
+        st.image("path_to_image/Lam_Nguyen.jpg", width=100)  # Adjust image path accordingly
+        st.markdown("**Lam Nguyen**")
+
+    with col3:
+        st.image("path_to_image/Mia_Le.jpg", width=100)  # Adjust image path accordingly
+        st.markdown("**Mia Le**")
+
+    with col4:
+        st.image("path_to_image/Alice_Zhang.jpg", width=100)  # Adjust image path accordingly
+        st.markdown("**Alice Zhang**")
+
 
 # --- Dataset Tab ---
 with main_tabs[1]:
