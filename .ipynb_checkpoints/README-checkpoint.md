@@ -85,3 +85,4 @@ The dashboard will combine:
 - Signals & Info: [Google Drive Link](https://drive.google.com/file/d/1Sev9s6cPFUGgxp1pFiej0lGzpsMqJCI2/view)
 - Proposal instruction: [Project Proposal Template](https://ledatascifi.github.io/ledatascifi-2025/content/assignments/project_prop_template.html)
 - Slides Presentation: [Google Slide Link](https://docs.google.com/presentation/d/1HkhijYZiKDEme0Dnsed7oKIVbTOau8Py2NFv29Ndk88/edit?usp=sharing)
+- Website: [Stock Return Prediction Dashboard](https://theasians.streamlit.app/)
