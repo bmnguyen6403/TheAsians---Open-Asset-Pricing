@@ -13,6 +13,26 @@ main_tabs = st.tabs(["📘 Introduction", "📊 Dataset", "📈 Analysis"])
 # --- Introduction Tab ---
 with main_tabs[0]:
     st.header("📘 Project Introduction")
+    
+    # Team Introduction Section
+    st.markdown("### Meet the Team")
+    
+    # Create a horizontal layout to display images in a row with controlled spacing
+    col1, col2, col3, col4 = st.columns(4)
+
+    # Increase the image size and make sure the images are the same
+    with col1:
+        st.image("image/Minh Nguyen.jpg", caption="Minh Nguyen", use_column_width=True)
+    
+    with col2:
+        st.image("image/Lam Nguyen.jpg", caption="Lam Nguyen", use_column_width=True)
+    
+    with col3:
+        st.image("image/Mia Le.jpg", caption="Mia Le", use_column_width=True)
+    
+    with col4:
+        st.image("image/Alice Zhang.jpg", caption="Alice Zhang", use_column_width=True)
+
     st.markdown("""
     **Problem Statement**  
     This project applies machine learning to forecast stock returns using survival analysis, signal decay, and composite signal construction. It focuses on building strong predictors from multiple financial signals and evaluating their performance in different market regimes.
@@ -34,27 +54,6 @@ with main_tabs[0]:
     - **H4**: Regime-aware models outperform static models.
     """)
 
-    # Adding team member images and names
-    st.markdown("### Meet the Team")
-    
-    # Creating columns for images and names of the team members
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.image("path_to_image/Minh_Nguyen.jpg", width=100)  # Adjust image path accordingly
-        st.markdown("**Minh Nguyen**")
-
-    with col2:
-        st.image("path_to_image/Lam_Nguyen.jpg", width=100)  # Adjust image path accordingly
-        st.markdown("**Lam Nguyen**")
-
-    with col3:
-        st.image("path_to_image/Mia_Le.jpg", width=100)  # Adjust image path accordingly
-        st.markdown("**Mia Le**")
-
-    with col4:
-        st.image("path_to_image/Alice_Zhang.jpg", width=100)  # Adjust image path accordingly
-        st.markdown("**Alice Zhang**")
 
 
 # --- Dataset Tab ---
