@@ -20,19 +20,24 @@ with main_tabs[0]:
     # Create a horizontal layout to display images in a row with controlled spacing
     col1, col2, col3, col4 = st.columns(4)
 
-    # Display images with corrected size and orientation for Minh Nguyen
+# Display images with controlled size
     with col1:
-        st.image("image/Minh Nguyen.jpg", caption="Minh Nguyen", use_container_width=True)
+        st.image("image/Minh Nguyen.jpg", use_container_width=True)
+        st.markdown("<h4 style='text-align: center; font-size: 18px;'>Minh Nguyen</h4>", unsafe_allow_html=True)
     
     with col2:
-        st.image("image/Lam Nguyen.jpg", caption="Lam Nguyen", use_container_width=True)
+        st.image("image/Lam Nguyen.jpg", use_container_width=True)
+        st.markdown("<h4 style='text-align: center; font-size: 18px;'>Lam Nguyen</h4>", unsafe_allow_html=True)
     
     with col3:
-        st.image("image/Mia Le.jpg", caption="Mia Le", use_container_width=True)
+        st.image("image/Mia Le.jpg", use_container_width=True)
+        st.markdown("<h4 style='text-align: center; font-size: 18px;'>Mia Le</h4>", unsafe_allow_html=True)
     
     with col4:
-        st.image("image/Alice Zhang.jpg", caption="Alice Zhang", use_container_width=True)
-        
+        st.image("image/Alice Zhang.jpg", use_container_width=True)
+        st.markdown("<h4 style='text-align: center; font-size: 18px;'>Alice Zhang</h4>", unsafe_allow_html=True)
+
+
     st.markdown("""
     **Problem Statement**  
     This project applies machine learning to forecast stock returns using survival analysis, signal decay, and composite signal construction. It focuses on building strong predictors from multiple financial signals and evaluating their performance in different market regimes.
